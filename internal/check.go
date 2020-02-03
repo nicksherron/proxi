@@ -19,7 +19,6 @@ package internal
 import (
 	"context"
 	"crypto/tls"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
