@@ -27,7 +27,7 @@ import (
 	"syscall"
 	"time"
 
-	isatty "github.com/mattn/go-isatty"
+	"github.com/mattn/go-isatty"
 	"github.com/nicksherron/proxi/internal"
 	"github.com/spf13/cobra"
 )
