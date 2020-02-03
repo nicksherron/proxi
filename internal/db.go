@@ -207,7 +207,7 @@ func findProxy(p string) interface{} {
 	var row Proxy
 	err := DB.QueryRow(`select "response_time",  "anonymous",   "check_count",   "country",   "created_at",   "fail_count",   "id",
    						       "last_status",   "proxy",   "source",   "success_count",   "timeout_count",
-   						      "updated_at"  from proxies where proxy = `, p).Scan(&row)
+   						      "updated_at"  from proxies where proxy = $1`, p).Scan(&row)
 
 	if err != nil {
 		log.Fatal(err)

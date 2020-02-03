@@ -39,6 +39,7 @@ var (
 	busy   bool
 	wgD    sync.WaitGroup
 	reader io.ReadCloser
+	DownloadTimeout time.Duration
 )
 
 func findSubmatchRange(regex *regexp.Regexp, str string) []string {
@@ -149,7 +150,7 @@ func DownloadProxies() Proxies {
 	wgD.Add(16)
 	var providerProxies Proxies
 
-	ctxTimeout := time.Minute
+	ctxTimeout := DownloadTimeout
 	// Download from providers
 	go func() {
 		defer wgD.Done()
