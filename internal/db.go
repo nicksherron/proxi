@@ -298,6 +298,7 @@ func deleteProxy(p string) int64 {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println(result)
 	return result
 }
 

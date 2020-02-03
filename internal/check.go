@@ -241,11 +241,11 @@ func proxyCheck(proxy *Proxy) {
 		Transport: tr,
 	}
 
+	proxy.Judge = judgeUrl
+
 	start := time.Now()
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout+5*time.Second)
 	defer cancel()
-
-	proxy.Judge = judgeUrl
 
 	req, err := http.NewRequestWithContext(ctx, "GET", judgeUrl, nil)
 	check(err)
@@ -263,6 +263,7 @@ func proxyCheck(proxy *Proxy) {
 	check(err)
 
 	*proxy.RespTime = time.Since(start).Truncate(time.Millisecond).String()
+
 	var jsonBody httpBin
 	err = json.Unmarshal(body, &jsonBody)
 	check(err)
