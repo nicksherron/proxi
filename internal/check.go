@@ -306,7 +306,7 @@ func CheckInit() {
 		limit = int64(Workers)
 	}
 
-	fmt.Print("\nStarting proxy checks...\n\n")
+	log.Print("\nStarting proxy checks...\n\n")
 	log.SetOutput(nil)
 	atomic.StoreInt64(&testCount, 0)
 	realIP = hostIP()
@@ -343,7 +343,7 @@ func CheckInit() {
 		bar.Finish()
 	}
 	log.SetOutput(os.Stderr)
-	fmt.Println("Done checking proxies. Took ", time.Since(begin))
+	log.Println("Done checking proxies.")
 	busy = false
 }
 

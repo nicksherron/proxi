@@ -146,7 +146,7 @@ func getKuaidaili(u string) (string, error) {
 
 // DownloadProxies downloads proxies from providers.
 func DownloadProxies() Proxies {
-	log.Println("\rStarting proxy downloads...")
+	log.Println(" Starting proxy downloads...")
 	wgD.Add(17)
 	var providerProxies Proxies
 
@@ -349,6 +349,7 @@ func DownloadInit() {
 			fmt.Fprintln(tmpfile, v)
 		}
 	}
+	log.Println("Done Downloading proxies.")
 	CheckInit()
-	fmt.Println("Done")
+
 }
