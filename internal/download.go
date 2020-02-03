@@ -30,13 +30,15 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/icrowley/fake"
 )
 
 var (
-	mutex              = &sync.Mutex{}
-	busy               bool
-	wgD      sync.WaitGroup
-	reader   io.ReadCloser
+	mutex  = &sync.Mutex{}
+	busy   bool
+	wgD    sync.WaitGroup
+	reader io.ReadCloser
 )
 
 func findSubmatchRange(regex *regexp.Regexp, str string) []string {
@@ -95,6 +97,29 @@ func get(u string) (string, error) {
 		return "", err
 	}
 
+	return string(body), nil
+
+}
+
+func getX(u string) (string, error) {
+	client := &http.Client{
+		Timeout: 20 * time.Second,
+	}
+	req, err := http.NewRequest("GET", u, nil)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("X-Forwarded-For", fake.IPv4())
+	req.Header.Set("User-Agent", `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36`)
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
 	return string(body), nil
 
 }

@@ -367,7 +367,6 @@ func YipP() Proxies {
 		}(i)
 	}
 	w.Wait()
-
 	if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
 		if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
 			fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
@@ -449,7 +448,7 @@ func KuaidailiP(resultLimit int) Proxies {
 		reHref       = regexp.MustCompile(`(?m)<a href="/free/inha/(\d+)/">`)
 		url          = "https://www.kuaidaili.com/free/inha/1/"
 	)
-	body, err := get(url)
+	body, err := getX(url)
 	if err != nil {
 		return Proxies{}
 	}
@@ -478,7 +477,7 @@ func KuaidailiP(resultLimit int) Proxies {
 		go func(page int) {
 			defer w.Done()
 			u := fmt.Sprintf("https://www.kuaidaili.com/free/inha/%v/", page)
-			ipList, err := get(u)
+			ipList, err := getX(u)
 			if err != nil {
 				return
 			}
