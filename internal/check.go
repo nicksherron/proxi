@@ -261,8 +261,7 @@ func proxyCheck(proxy *Proxy) {
 	body, err := ioutil.ReadAll(resp.Body)
 	check(err)
 
-	*proxy.RespTime = time.Since(start).String()
-
+	*proxy.RespTime = time.Since(start).Truncate(time.Millisecond).String()
 	var jsonBody httpBin
 	err = json.Unmarshal(body, &jsonBody)
 	check(err)
