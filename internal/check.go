@@ -171,7 +171,7 @@ func hostIP() string {
 	return jsonBody.Origin
 }
 
-func proxyCheck(proxy *Proxy) {
+func proxyCheck(proxy *Proxy, proxyChan chan *Proxy) {
 	defer func() {
 		wgC.Done()
 		if Progress {
@@ -183,48 +183,48 @@ func proxyCheck(proxy *Proxy) {
 			if strings.Contains(fmt.Sprintf("%v", r), "Client.Timeout exceeded while awaiting headers") {
 				proxy.LastStatus = "timeout"
 				proxy.TimeoutCount++
-				mutex.Lock()
-				checkedProxies = append(checkedProxies, proxy)
-				mutex.Unlock()
-				//proxyChan <- proxy
+				//mutex.Lock()
+				//checkedProxies = append(checkedProxies, proxy)
+				//mutex.Unlock()
+				proxyChan <- proxy
 				return
 			}
 			proxy.LastStatus = "fail"
 			proxy.FailCount++
-			mutex.Lock()
-			checkedProxies = append(checkedProxies, proxy)
-			mutex.Unlock()
-			//proxyChan <- proxy
+			//mutex.Lock()
+			//checkedProxies = append(checkedProxies, proxy)
+			//mutex.Unlock()
+			proxyChan <- proxy
 			return
 		}
 	}()
 
 	if proxy.LosingStreak >= 5 {
 		proxy.Deleted = true
-		mutex.Lock()
-		checkedProxies = append(checkedProxies, proxy)
-		mutex.Unlock()
-		//proxyChan <- proxy
+		//mutex.Lock()
+		//checkedProxies = append(checkedProxies, proxy)
+		//mutex.Unlock()
+		proxyChan <- proxy
 		return
 	}
 
 	if proxy.CheckCount > 5 {
 		if float64(proxy.FailCount)/float64(proxy.CheckCount) >= 0.90 {
 			proxy.Deleted = true
-			mutex.Lock()
-			checkedProxies = append(checkedProxies, proxy)
-			mutex.Unlock()
-			//proxyChan <- proxy
+			//mutex.Lock()
+			//checkedProxies = append(checkedProxies, proxy)
+			//mutex.Unlock()
+			proxyChan <- proxy
 			return
 		}
 	}
 	if proxy.CheckCount > 10 {
 		if float64(proxy.FailCount)/float64(proxy.CheckCount) >= 0.80 {
 			proxy.Deleted = true
-			mutex.Lock()
-			checkedProxies = append(checkedProxies, proxy)
-			mutex.Unlock()
-			//proxyChan <- proxy
+			//mutex.Lock()
+			//checkedProxies = append(checkedProxies, proxy)
+			//mutex.Unlock()
+			proxyChan <- proxy
 			return
 		}
 	}
@@ -292,10 +292,10 @@ func proxyCheck(proxy *Proxy) {
 	proxy.LastStatus = "good"
 	proxy.LosingStreak = 0
 	proxy.SuccessCount++
-	mutex.Lock()
-	checkedProxies = append(checkedProxies, proxy)
-	mutex.Unlock()
-	//proxyChan <- proxy
+	//mutex.Lock()
+	//checkedProxies = append(checkedProxies, proxy)
+	//mutex.Unlock()
+	proxyChan <- proxy
 
 }
 
@@ -327,20 +327,19 @@ func CheckInit() {
 		bar = pb.ProgressBarTemplate(barTemplate).Start(len(proxies)).SetMaxWidth(80)
 		bar.Set("message", "Testing proxies\t")
 	}
-	quit := make(chan bool)
-	proxyChan := make(chan Proxies)
-	inserting := make(chan bool)
+	quit := make(chan int)
+	proxyChan := make(chan *Proxy)
+	var inserted int64
+	inserted = 0
+
 	go func() {
 		for {
 			select {
 			case <-quit:
 				return
-			case proxies := <-proxyChan:
-				inserting <- true
-				for _, proxy := range proxies {
-					dbInsert(proxy)
-				}
-				inserting <- false
+			case p := <-proxyChan:
+				dbInsert(p)
+				atomic.AddInt64(&inserted, 1)
 			}
 		}
 	}()
@@ -351,29 +350,26 @@ func CheckInit() {
 		for _, proxy := range proxies {
 			wgC.Add(1)
 			atomic.AddInt64(&counter, 1)
-			go proxyCheck(proxy)
+			go proxyCheck(proxy, proxyChan)
 			if atomic.CompareAndSwapInt64(&counter, limit, 0) {
 				wgC.Wait()
-				mutex.Lock()
-				proxyChan <- checkedProxies
-				checkedProxies = Proxies{}
-				mutex.Unlock()
+				//storeCheckedProxies()
 			}
 		}
 	}()
 	wgLoop.Wait()
 	if counter > 0 {
 		wgC.Wait()
+		//storeCheckedProxies()
 	}
 	if Progress {
 		bar.Finish()
 	}
 	for {
-		select {
-		case <-inserting:
-			time.Sleep(2 * time.Second)
-		default:
-			quit <- true
+		if inserted != int64(len(proxies)) {
+			time.Sleep(1 * time.Second)
+		} else {
+			quit <- 0
 			log.SetOutput(os.Stderr)
 			fmt.Println("Done checking proxies.")
 			busy = false
@@ -384,3 +380,16 @@ func CheckInit() {
 	}
 
 }
+
+//func storeCheckedProxies() {
+//	log.SetOutput(os.Stderr)
+//	dbPrepWrite()
+//	mutex.Lock()
+//	proxies := checkedProxies
+//	checkedProxies = Proxies{}
+//	mutex.Unlock()
+//	for _, proxy := range proxies {
+//		dbInsert(proxy)
+//	}
+//	log.SetOutput(nil)
+//}
