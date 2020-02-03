@@ -20,7 +20,7 @@ GO111MODULE=on go get -u github.com/nicksherron/proxi
 ```
 
 ### Releases
-Binaries for Windows, Linux and Darwin can be found under releases. If your os/architecture is not supported, submit an issue and more than likely it can be included.
+Binaries for Windows, Linux and Darwin can be found under [releases](https://github.com/nicksherron/proxi/releases). If your os/architecture is not supported, submit an issue and more than likely it can be included.
 
 
 
