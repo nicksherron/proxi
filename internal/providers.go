@@ -91,12 +91,12 @@ func FreeproxylistsP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
 		case <-done:
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
@@ -151,12 +151,12 @@ func WebanetlabsP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
 		case <-done:
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
@@ -218,12 +218,12 @@ func CheckerproxyP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
 		case <-done:
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
@@ -274,13 +274,13 @@ func ProxyListP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
 		case <-done:
 			return foundProxies
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 		}
@@ -345,12 +345,12 @@ func AliveproxyP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
 		case <-done:
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
@@ -384,12 +384,12 @@ func FeiyiproxyP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
 		case <-done:
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
@@ -457,12 +457,12 @@ func YipP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
 		case <-done:
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
@@ -529,12 +529,12 @@ func Ip3366P(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
 		case <-done:
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
@@ -607,12 +607,12 @@ func KuaidailiP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
 		case <-done:
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
@@ -690,12 +690,12 @@ func ProxylistMeP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
 		case <-done:
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
@@ -729,12 +729,12 @@ func ProxylistDownloadP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
 		case <-done:
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
@@ -801,12 +801,12 @@ func BlogspotP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
 		case <-done:
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
@@ -859,12 +859,12 @@ func ProxP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
 		case <-done:
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
@@ -916,12 +916,12 @@ func MyProxyP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
 		case <-done:
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
@@ -957,12 +957,12 @@ func XseoP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
 		case <-done:
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
@@ -997,12 +997,12 @@ func GithubClarketmP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies
 		case <-done:
-			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 			}
 			return foundProxies

@@ -313,7 +313,7 @@ func DownloadInit() {
 	}
 	var tmpfile *os.File
 	dumpResults := false
-	if os.Getenv("PROXYPOOL_DUMP") == "1" {
+	if os.Getenv("PROXI_DUMP") == "1" {
 		tmpfile, err = ioutil.TempFile("", "proxi-dump.*.txt")
 		if err != nil {
 			log.Fatal(err)

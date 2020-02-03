@@ -69,8 +69,8 @@ func resolveJudges() {
 		"http://httpbin.net",
 		"http://eu.httpbin.org",
 	}
-	if os.Getenv("PROXYPOOL_JUDGES") != "" {
-		for _, v := range strings.Split(os.Getenv("PROXYPOOL_JUDGES"), `,`) {
+	if os.Getenv("PROXI_JUDGES") != "" {
+		for _, v := range strings.Split(os.Getenv("PROXI_JUDGES"), `,`) {
 			sites = append(sites, strings.TrimSpace(v))
 		}
 
@@ -144,7 +144,7 @@ func resolveJudges() {
 		return records[i].Value < records[j].Value
 	})
 
-	if os.Getenv("PROXYPOOL_DEBUG_JUDGES") == "1" {
+	if os.Getenv("PROXI_DEBUG_JUDGES") == "1" {
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{"success_tests", "response_time", "site"})
 		for _, v := range sites {
@@ -292,7 +292,7 @@ func CheckInit() {
 	begin := time.Now()
 	busy = true
 	resolveJudges()
-	if os.Getenv("PROXYPOOL_DEBUG_JUDGES") == "1" {
+	if os.Getenv("PROXI_DEBUG_JUDGES") == "1" {
 		fmt.Println(judgeUrl)
 	}
 	var proxies Proxies

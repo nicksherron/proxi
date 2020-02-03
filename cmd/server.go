@@ -23,6 +23,7 @@ import (
 	"runtime"
 	"runtime/pprof"
 	"runtime/trace"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -86,21 +87,37 @@ func init() {
 	serverCmd.PersistentFlags().IntVar(&updateFreq, "interval", 12, "Wait interval in hours before (re)checking proxies and downloading new ones.")
 	serverCmd.PersistentFlags().DurationVar(&internal.Timeout, "check-timeout", 30*time.Second, "Specify request time out for checking proxies.")
 	serverCmd.PersistentFlags().DurationVar(&internal.DownloadTimeout, "download-timeout", 60*time.Second, "Specify timeout out for downloading proxies.")
-	serverCmd.PersistentFlags().IntVarP(&internal.Workers, "workers", "w", 100, "Number of (goroutines) concurrent requests to make for checking proxies.")
+	serverCmd.PersistentFlags().IntVarP(&internal.Workers, "workers", "w", workerN(), "Number of (goroutines) concurrent requests to make for checking proxies.")
 	serverCmd.PersistentFlags().BoolVar(&pingDB, "ping", false, "Ping db and exit.")
 	serverCmd.PersistentFlags().BoolVarP(&internal.Progress, "progress", "p", isTerminal(os.Stderr), "Show proxy test progress bar.")
 }
 
 func listenAddr() string {
 	var a string
-	if os.Getenv("PROXYPOOL_ADDRESS") != "" {
-		a = os.Getenv("PROXYPOOL_ADDRESS")
+	if os.Getenv("PROXI_ADDRESS") != "" {
+		a = os.Getenv("PROXI_ADDRESS")
 		return a
 	}
 	a = "0.0.0.0:4444"
 	return a
 
 }
+
+func workerN() int {
+	if os.Getenv("PROXI_WORKERS") != "" {
+		s := os.Getenv("PROXI_WORKERS")
+		if w, ok := strconv.Atoi(s); ok == nil {
+			return w
+		} else {
+			w = 100
+			return w
+		}
+	}
+	w := 100
+	return w
+
+}
+
 
 func maxmindPath() string {
 	maxmindFile := "GeoLite2-Country.mmdb"
