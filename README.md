@@ -13,6 +13,13 @@ Homebrew or Linuxbrew
 ```shell script
 brew install nicksherron/proxi/proxi
 ```
+### Docker
+
+```shell script
+docker run -d -p 4444:4444 nicksherron/proxi server --init
+```
+
+
 ### Go
 Go version 1.11 or higher is required to go get proxi since it uses go modules.   
 ```shell script
@@ -21,8 +28,6 @@ GO111MODULE=on go get -u github.com/nicksherron/proxi
 
 ### Releases
 Binaries for Windows, Linux and Darwin can be found under [releases](https://github.com/nicksherron/proxi/releases). If your os/architecture is not supported, submit an issue and more than likely it can be included.
-
-
 
 
 
