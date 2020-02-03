@@ -210,7 +210,7 @@ func findProxy(p string) interface{} {
    						      "updated_at"  from proxies where proxy = $1`, p).Scan(&row)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	if row.Proxy != "" {
