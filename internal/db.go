@@ -48,20 +48,19 @@ type Model struct {
 // Proxy represents a proxy record and is used to create the table for our db.
 type Proxy struct {
 	Model
-	AvgResponse  string `gorm:"-" json:"avg_response"`
-	ResponseTime int64  `json:"-" gorm:"default:0"`
-	CheckCount   uint   `json:"check_count" gorm:"default:0"`
-	Country      string `json:"country" `
-	FailCount    uint   `json:"fail_count" gorm:"default:0"`
-	LastStatus   string `json:"last_status"`
-	Proxy        string `json:"proxy" gorm:"type:varchar(100);unique_index"`
-	TimeoutCount uint   `json:"timeout_count" gorm:"default:0"`
-	Source       string `json:"source"`
-	SuccessCount uint   `json:"success_count" gorm:"default:0"`
-	Anonymous    bool   `json:"anonymous"`
-	LosingStreak uint   `json:"-" gorm:"default:0"`
-	Deleted      bool   `json:"-" gorm:"default:false"`
-	Judge        string `json:"-"`
+	RespTime     *string `json:"response_time"`
+	CheckCount   uint    `json:"check_count" gorm:"default:0"`
+	Country      string  `json:"country" `
+	FailCount    uint    `json:"fail_count" gorm:"default:0"`
+	LastStatus   string  `json:"last_status"`
+	Proxy        string  `json:"proxy" gorm:"type:varchar(100);unique_index"`
+	TimeoutCount uint    `json:"timeout_count" gorm:"default:0"`
+	Source       string  `json:"source"`
+	SuccessCount uint    `json:"success_count" gorm:"default:0"`
+	Anonymous    bool    `json:"anonymous"`
+	LosingStreak uint    `json:"-" gorm:"default:0"`
+	Deleted      bool    `json:"-" gorm:"default:false"`
+	Judge        string  `json:"-"`
 }
 
 // Proxies is a slice of Proxy
@@ -173,9 +172,9 @@ func loadDb(proxy *Proxy) {
 func dbInsert(proxy *Proxy) {
 	_, err := DB.Exec(`update proxies SET "updated_at" = $1, "check_count" = $2 ,"fail_count" = $3,
  							"last_status" = $4, "timeout_count" = $5, "success_count" = $6, "losing_streak" = $7,
- 							 "deleted" = $8,  "anonymous" = $9 , "proxy" = $10, judge = $11, "response_time" = $12 where id = $13`,
+ 							 "deleted" = $8,  "anonymous" = $9 , "proxy" = $10, judge = $11, "resp_time" = $12 where id = $13`,
 		time.Now(), proxy.CheckCount, proxy.FailCount, proxy.LastStatus, proxy.TimeoutCount,
-		proxy.SuccessCount, proxy.LosingStreak, proxy.Deleted, proxy.Anonymous, proxy.Proxy, proxy.Judge, proxy.ResponseTime, proxy.ID)
+		proxy.SuccessCount, proxy.LosingStreak, proxy.Deleted, proxy.Anonymous, proxy.Proxy, proxy.Judge, proxy.RespTime, proxy.ID)
 	if err != nil {
 		log.Println(err)
 	}
@@ -186,15 +185,15 @@ func dbFind() Proxies {
 	rows, err := DB.Query(`SELECT "response_time", "id", "check_count", "fail_count","proxy",
  										"timeout_count", "success_count", "losing_streak" FROM proxies where deleted = false`)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var row Proxy
-		err = rows.Scan(&row.ResponseTime, &row.ID, &row.CheckCount, &row.FailCount, &row.Proxy, &row.TimeoutCount,
+		err = rows.Scan(&row.RespTime, &row.ID, &row.CheckCount, &row.FailCount, &row.Proxy, &row.TimeoutCount,
 			&row.SuccessCount, &row.LosingStreak)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 		out = append(out, &row)
 	}
@@ -205,18 +204,16 @@ func dbFind() Proxies {
 
 func findProxy(p string) interface{} {
 	var row Proxy
-	err := DB.QueryRow(`select "response_time",  "anonymous",   "check_count",   "country",   "created_at",   "fail_count",   "id",
+	err := DB.QueryRow(`select "resp_time",  "anonymous",   "check_count",   "country",   "created_at",   "fail_count",   "id",
    						       "last_status",   "proxy",   "source",   "success_count",   "timeout_count",
-   						      "updated_at"  from proxies where proxy = $1`, p).Scan(&row.ResponseTime, &row.Anonymous,
+   						      "updated_at"  from proxies where proxy = $1`, p).Scan(&row.RespTime, &row.Anonymous,
 		&row.CheckCount, &row.Country, &row.CreatedAt, &row.FailCount, &row.ID,
 		&row.LastStatus, &row.Proxy, &row.Source, &row.SuccessCount, &row.TimeoutCount, &row.UpdatedAt)
 
 	if err != nil {
 		log.Println(err)
 	}
-
 	if row.Proxy != "" {
-		row.AvgResponse = fmt.Sprintf("%v", time.Duration(row.ResponseTime)*time.Nanosecond)
 		return row
 	}
 	return nil
@@ -235,24 +232,24 @@ func getProxyN(num int64, c *gin.Context) Proxies {
 	if anon {
 		if countryBool {
 			// better performance with sub queries, see https://stackoverflow.com/a/24591688.
-			rows, err = DB.Query(`select "response_time", "anonymous",   "check_count",   "country",   "created_at",   "fail_count",   "id",
+			rows, err = DB.Query(`select "resp_time", "anonymous",   "check_count",   "country",   "created_at",   "fail_count",   "id",
    						       "last_status",   "proxy",   "source",   "success_count",   "timeout_count",
    						      "updated_at"  from proxies 
    						      where id in (select id from proxies where last_status = 'good' and country = $1 and anonymous order by random() limit $2)`, country, num)
 		} else {
-			rows, err = DB.Query(`select "response_time", "anonymous",   "check_count",   "country",   "created_at",   "fail_count",   "id",
+			rows, err = DB.Query(`select "resp_time", "anonymous",   "check_count",   "country",   "created_at",   "fail_count",   "id",
    						       "last_status",   "proxy",   "source",   "success_count",   "timeout_count",
    						      "updated_at"  from proxies 
    						      where id in (select id from proxies where last_status = 'good' and anonymous order by random() limit $1)`, num)
 		}
 	} else {
 		if countryBool {
-			rows, err = DB.Query(`select "response_time", "anonymous",   "check_count",   "country",   "created_at",   "fail_count",
+			rows, err = DB.Query(`select "resp_time", "anonymous",   "check_count",   "country",   "created_at",   "fail_count",
 							   "id", "last_status",   "proxy",   "source",   "success_count",   "timeout_count", "updated_at"
 							     from proxies where id in (select id from proxies where last_status = 'good' and
 							      country = $1 order by random() limit $2)`, country, num)
 		} else {
-			rows, err = DB.Query(`select "response_time", "anonymous",   "check_count",   "country",   "created_at",   
+			rows, err = DB.Query(`select "resp_time", "anonymous",   "check_count",   "country",   "created_at",   
 								"fail_count",   "id","last_status",   "proxy",   "source",   "success_count",
 								"timeout_count","updated_at"  from proxies where id in 
 								(select id from proxies where last_status = 'good'  order by random() limit $1)`, num)
@@ -263,12 +260,11 @@ func getProxyN(num int64, c *gin.Context) Proxies {
 
 	for rows.Next() {
 		var row Proxy
-		err = rows.Scan(&row.ResponseTime, &row.Anonymous, &row.CheckCount, &row.Country, &row.CreatedAt, &row.FailCount, &row.ID,
+		err = rows.Scan(&row.RespTime, &row.Anonymous, &row.CheckCount, &row.Country, &row.CreatedAt, &row.FailCount, &row.ID,
 			&row.LastStatus, &row.Proxy, &row.Source, &row.SuccessCount, &row.TimeoutCount, &row.UpdatedAt)
 		if err != nil {
 			log.Fatal(err)
 		}
-		row.AvgResponse = fmt.Sprintf("%v", time.Duration(row.ResponseTime)*time.Nanosecond)
 		proxies = append(proxies, &row)
 	}
 	return proxies
@@ -276,18 +272,17 @@ func getProxyN(num int64, c *gin.Context) Proxies {
 
 func getProxyAll() Proxies {
 	var proxies Proxies
-	rows, err := DB.Query(`select "response_time", "anonymous",   "check_count",   "country",   "created_at",   "fail_count",   "id",
+	rows, err := DB.Query(`select "resp_time", "anonymous",   "check_count",   "country",   "created_at",   "fail_count",   "id",
    						       "last_status",   "proxy",   "source",   "success_count",   "timeout_count",
    						      "updated_at"  from proxies)`)
 	defer rows.Close()
 	for rows.Next() {
 		var row Proxy
-		err = rows.Scan(&row.ResponseTime, &row.Anonymous, &row.CheckCount, &row.Country, &row.CreatedAt, &row.FailCount, &row.ID,
+		err = rows.Scan(&row.RespTime, &row.Anonymous, &row.CheckCount, &row.Country, &row.CreatedAt, &row.FailCount, &row.ID,
 			&row.LastStatus, &row.Proxy, &row.Source, &row.SuccessCount, &row.TimeoutCount, &row.UpdatedAt)
 		if err != nil {
 			log.Fatal(err)
 		}
-		//row.AvgResponse = time.Duration(time.Duration(row.ResponseTime) * time.Nanosecond).String()
 		proxies = append(proxies, &row)
 	}
 	return proxies

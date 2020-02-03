@@ -19,6 +19,7 @@ package internal
 import (
 	"context"
 	"crypto/tls"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -262,6 +263,8 @@ func proxyCheck(proxy *Proxy) {
 	check(err)
 	done := time.Now().Nanosecond()
 
+	*proxy.RespTime = time.Duration(done).String()
+
 	var jsonBody httpBin
 	err = json.Unmarshal(body, &jsonBody)
 	check(err)
@@ -270,12 +273,6 @@ func proxyCheck(proxy *Proxy) {
 		return
 	}
 
-	// make sure body is valid before updating response time
-	if proxy.ResponseTime == 0 {
-		proxy.ResponseTime = int64(done)
-	} else {
-		proxy.ResponseTime = proxy.ResponseTime + int64(done-start/2)
-	}
 
 	if strings.Contains(jsonBody.Origin, realIP) {
 		proxy.Anonymous = false
