@@ -572,6 +572,8 @@ func KuaidailiP(ctx context.Context) Proxies {
 			return
 		}
 		sort.Ints(ints)
+		largest = ints[len(ints)-1]
+		largest++
 		counter := 0
 		for i := 1; i < largest; i++ {
 			w.Add(1)
