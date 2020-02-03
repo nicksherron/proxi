@@ -174,6 +174,8 @@ func hostIP() string {
 
 func proxyCheck(proxy *Proxy) {
 
+	proxy.CheckCount++
+
 	defer func() {
 		wgC.Done()
 		if Progress {
@@ -225,9 +227,6 @@ func proxyCheck(proxy *Proxy) {
 			return
 		}
 	}
-
-	proxy.CheckCount++
-
 	prox := proxy.Proxy
 	proxyURL, err := url.Parse(prox)
 	check(err)
@@ -319,6 +318,7 @@ func CheckInit() {
 	realIP = hostIP()
 	counter = 0
 	loops := 0
+
 	wgLoop.Add(1)
 	if Progress {
 		bar = pb.ProgressBarTemplate(barTemplate).Start(len(proxies)).SetMaxWidth(80)
