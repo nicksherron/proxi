@@ -39,7 +39,7 @@ var (
 	templateProxy = "http://${ip}:${port}\n"
 )
 
-func FreeproxylistsP(ctx context.Context) Proxies {
+func freeproxylistsP(ctx context.Context) Proxies {
 	defer ctx.Done()
 	start := time.Now()
 	var (
@@ -104,7 +104,7 @@ func FreeproxylistsP(ctx context.Context) Proxies {
 	}
 }
 
-func WebanetlabsP(ctx context.Context) Proxies {
+func webanetlabsP(ctx context.Context) Proxies {
 	defer ctx.Done()
 	start := time.Now()
 	var (
@@ -231,7 +231,7 @@ func CheckerproxyP(ctx context.Context) Proxies {
 	}
 }
 
-func ProxyListP(ctx context.Context) Proxies {
+func proxyListP(ctx context.Context) Proxies {
 	defer ctx.Done()
 	start := time.Now()
 	var (
@@ -287,7 +287,7 @@ func ProxyListP(ctx context.Context) Proxies {
 	}
 }
 
-func AliveproxyP(ctx context.Context) Proxies {
+func aliveproxyP(ctx context.Context) Proxies {
 	defer ctx.Done()
 	start := time.Now()
 	var (
@@ -358,7 +358,7 @@ func AliveproxyP(ctx context.Context) Proxies {
 	}
 }
 
-func FeiyiproxyP(ctx context.Context) Proxies {
+func feiyiproxyP(ctx context.Context) Proxies {
 	defer ctx.Done()
 	start := time.Now()
 	var (
@@ -398,7 +398,7 @@ func FeiyiproxyP(ctx context.Context) Proxies {
 
 }
 
-func YipP(ctx context.Context) Proxies {
+func yipP(ctx context.Context) Proxies {
 	defer ctx.Done()
 	start := time.Now()
 	var (
@@ -470,7 +470,7 @@ func YipP(ctx context.Context) Proxies {
 	}
 }
 
-func Ip3366P(ctx context.Context) Proxies {
+func ip3366P(ctx context.Context) Proxies {
 	defer ctx.Done()
 	start := time.Now()
 	var (
@@ -542,7 +542,7 @@ func Ip3366P(ctx context.Context) Proxies {
 	}
 }
 
-func KuaidailiP(ctx context.Context) Proxies {
+func kuaidailiP(ctx context.Context) Proxies {
 	start := time.Now()
 	var (
 		largest      int
@@ -620,7 +620,7 @@ func KuaidailiP(ctx context.Context) Proxies {
 	}
 }
 
-func ProxylistMeP(ctx context.Context) Proxies {
+func proxylistMeP(ctx context.Context) Proxies {
 	defer ctx.Done()
 	start := time.Now()
 	var (
@@ -703,7 +703,7 @@ func ProxylistMeP(ctx context.Context) Proxies {
 	}
 }
 
-func ProxylistDownloadP(ctx context.Context) Proxies {
+func proxylistDownloadP(ctx context.Context) Proxies {
 	defer ctx.Done()
 	start := time.Now()
 	var (
@@ -742,7 +742,7 @@ func ProxylistDownloadP(ctx context.Context) Proxies {
 	}
 }
 
-func BlogspotP(ctx context.Context) Proxies {
+func blogspotP(ctx context.Context) Proxies {
 	defer ctx.Done()
 	start := time.Now()
 	var (
@@ -814,7 +814,7 @@ func BlogspotP(ctx context.Context) Proxies {
 	}
 }
 
-func ProxP(ctx context.Context) Proxies {
+func proxP(ctx context.Context) Proxies {
 	defer ctx.Done()
 	start := time.Now()
 	var (
@@ -872,7 +872,7 @@ func ProxP(ctx context.Context) Proxies {
 	}
 }
 
-func MyProxyP(ctx context.Context) Proxies {
+func myProxyP(ctx context.Context) Proxies {
 	defer ctx.Done()
 	start := time.Now()
 	var (
@@ -929,7 +929,7 @@ func MyProxyP(ctx context.Context) Proxies {
 	}
 }
 
-func XseoP(ctx context.Context) Proxies {
+func xseoP(ctx context.Context) Proxies {
 	defer ctx.Done()
 	start := time.Now()
 	var (
@@ -970,7 +970,7 @@ func XseoP(ctx context.Context) Proxies {
 	}
 }
 
-func GithubClarketmP(ctx context.Context) Proxies {
+func githubClarketmP(ctx context.Context) Proxies {
 	defer ctx.Done()
 	start := time.Now()
 	var (

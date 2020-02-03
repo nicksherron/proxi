@@ -45,7 +45,7 @@ var (
 	checkedProxies Proxies
 	counter        int64
 	realIP         string
-	wgDB		   sync.WaitGroup
+	wgDB           sync.WaitGroup
 	wgC            sync.WaitGroup
 	wgLoop         sync.WaitGroup
 	// Workers controls number of max goroutines at a time for checking proxies.
@@ -326,7 +326,7 @@ func CheckInit() {
 			if atomic.CompareAndSwapInt64(&counter, limit, 0) {
 				wgC.Wait()
 				wgDB.Add(1)
-				go 	storeCheckedProxies()
+				go storeCheckedProxies()
 
 			}
 		}
@@ -336,7 +336,7 @@ func CheckInit() {
 		wgC.Wait()
 	}
 	wgDB.Add(1)
-	go 	storeCheckedProxies()
+	go storeCheckedProxies()
 	wgDB.Wait()
 
 	if Progress {
@@ -358,5 +358,3 @@ func storeCheckedProxies() {
 		dbInsert(proxy)
 	}
 }
-
-

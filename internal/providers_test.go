@@ -30,11 +30,11 @@ var (
 
 // TODO: Not sure if these are very idiomatic. Maybe use test table for providers instead of separate functions but still perform each test regardless of success.
 
-func TestKuaidailiP(t *testing.T) {
+func TestkuaidailiP(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	results := KuaidailiP(ctx)
-	name := "KuaidailiP(ctx)"
+	results := kuaidailiP(ctx)
+	name := "kuaidailiP(ctx)"
 	if len(results) == 0 {
 		if *testRresults {
 			t.Errorf("%s didn't return results.", name)
@@ -48,11 +48,11 @@ func TestKuaidailiP(t *testing.T) {
 	}
 }
 
-func TestFeiyiproxyP(t *testing.T) {
+func TestfeiyiproxyP(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	results := FeiyiproxyP(ctx)
-	name := "FeiyiproxyP(ctx)"
+	results := feiyiproxyP(ctx)
+	name := "feiyiproxyP(ctx)"
 	if len(results) == 0 {
 		if *testRresults {
 			t.Errorf("%s didn't return results.", name)
@@ -66,11 +66,11 @@ func TestFeiyiproxyP(t *testing.T) {
 	}
 }
 
-func TestYipP(t *testing.T) {
+func TestyipP(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	results := YipP(ctx)
-	name := "YipP(ctx)"
+	results := yipP(ctx)
+	name := "yipP(ctx)"
 	if len(results) == 0 {
 		if *testRresults {
 			t.Errorf("%s didn't return results.", name)
@@ -84,11 +84,11 @@ func TestYipP(t *testing.T) {
 	}
 }
 
-func TestIp3366P(t *testing.T) {
+func Testip3366P(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	results := Ip3366P(ctx)
-	name := "Ip3366P(ctx)"
+	results := ip3366P(ctx)
+	name := "ip3366P(ctx)"
 	if len(results) == 0 {
 		if *testRresults {
 			t.Errorf("%s didn't return results.", name)
@@ -102,11 +102,11 @@ func TestIp3366P(t *testing.T) {
 	}
 }
 
-func TestGithubClarketmP(t *testing.T) {
+func TestgithubClarketmP(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	results := GithubClarketmP(ctx)
-	name := "GithubClarketmP(ctx)"
+	results := githubClarketmP(ctx)
+	name := "githubClarketmP(ctx)"
 	if len(results) == 0 {
 		if *testRresults {
 			t.Errorf("%s didn't return results.", name)
@@ -119,11 +119,11 @@ func TestGithubClarketmP(t *testing.T) {
 		t.Logf("%s sample = %v \t found = %v", name, results[0].Proxy, len(results))
 	}
 }
-func TestProxP(t *testing.T) {
+func TestproxP(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	results := ProxP(ctx)
-	name := "ProxP(ctx)"
+	results := proxP(ctx)
+	name := "proxP(ctx)"
 	if len(results) == 0 {
 		if *testRresults {
 			t.Errorf("%s didn't return results.", name)
@@ -136,11 +136,11 @@ func TestProxP(t *testing.T) {
 		t.Logf("%s sample = %v \t found = %v", name, results[0].Proxy, len(results))
 	}
 }
-func TestProxyListP(t *testing.T) {
+func TestproxyListP(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	results := ProxyListP(ctx)
-	name := "ProxyListP(ctx)"
+	results := proxyListP(ctx)
+	name := "proxyListP(ctx)"
 	if len(results) == 0 {
 		if *testRresults {
 			t.Errorf("%s didn't return results.", name)
@@ -153,11 +153,11 @@ func TestProxyListP(t *testing.T) {
 		t.Logf("%s sample = %v \t found = %v", name, results[0].Proxy, len(results))
 	}
 }
-func TestMyProxyP(t *testing.T) {
+func TestmyProxyP(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	results := MyProxyP(ctx)
-	name := "MyProxyP(ctx)"
+	results := myProxyP(ctx)
+	name := "myProxyP(ctx)"
 	if len(results) == 0 {
 		if *testRresults {
 			t.Errorf("%s didn't return results.", name)
@@ -170,11 +170,11 @@ func TestMyProxyP(t *testing.T) {
 		t.Logf("%s sample = %v \t found = %v", name, results[0].Proxy, len(results))
 	}
 }
-func TestXseoP(t *testing.T) {
+func TestxseoP(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	results := XseoP(ctx)
-	name := "XseoP(ctx)"
+	results := xseoP(ctx)
+	name := "xseoP(ctx)"
 	if len(results) == 0 {
 		if *testRresults {
 			t.Errorf("%s didn't return results.", name)
@@ -187,11 +187,11 @@ func TestXseoP(t *testing.T) {
 		t.Logf("%s sample = %v \t found = %v", name, results[0].Proxy, len(results))
 	}
 }
-func TestProxylistDownloadP(t *testing.T) {
+func TestproxylistDownloadP(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	results := ProxylistDownloadP(ctx)
-	name := "ProxylistDownloadP(ctx)"
+	results := proxylistDownloadP(ctx)
+	name := "proxylistDownloadP(ctx)"
 	if len(results) == 0 {
 		if *testRresults {
 			t.Errorf("%s didn't return results.", name)
@@ -204,11 +204,11 @@ func TestProxylistDownloadP(t *testing.T) {
 		t.Logf("%s sample = %v \t found = %v", name, results[0].Proxy, len(results))
 	}
 }
-func TestFreeproxylistsP(t *testing.T) {
+func TestfreeproxylistsP(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	results := FreeproxylistsP(ctx)
-	name := "FreeproxylistsP(ctx)"
+	results := freeproxylistsP(ctx)
+	name := "freeproxylistsP(ctx)"
 	if len(results) == 0 {
 		if *testRresults {
 			t.Errorf("%s didn't return results.", name)
@@ -221,29 +221,11 @@ func TestFreeproxylistsP(t *testing.T) {
 		t.Logf("%s sample = %v \t found = %v", name, results[0].Proxy, len(results))
 	}
 }
-func TestAliveproxyP(t *testing.T) {
+func TestaliveproxyP(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	results := AliveproxyP(ctx)
-	name := "AliveproxyP(ctx)"
-	if len(results) == 0 {
-		if *testRresults {
-			t.Errorf("%s didn't return results.", name)
-		}
-		return
-	}
-	if !re.MatchString(results[0].Proxy) {
-		t.Errorf("%s sample = %v; expected url pattern matching http://121.139.218.165:31409", name, results[0].Proxy)
-	} else {
-		t.Logf("%s sample = %v \t found = %v", name, results[0].Proxy, len(results))
-	}
-}
-
-func TestBlogspotP(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
-	defer cancel()
-	results := BlogspotP(ctx)
-	name := "BlogspotP(ctx)"
+	results := aliveproxyP(ctx)
+	name := "aliveproxyP(ctx)"
 	if len(results) == 0 {
 		if *testRresults {
 			t.Errorf("%s didn't return results.", name)
@@ -257,12 +239,30 @@ func TestBlogspotP(t *testing.T) {
 	}
 }
 
-func TestWebanetlabsP(t *testing.T) {
+func TestblogspotP(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+	defer cancel()
+	results := blogspotP(ctx)
+	name := "blogspotP(ctx)"
+	if len(results) == 0 {
+		if *testRresults {
+			t.Errorf("%s didn't return results.", name)
+		}
+		return
+	}
+	if !re.MatchString(results[0].Proxy) {
+		t.Errorf("%s sample = %v; expected url pattern matching http://121.139.218.165:31409", name, results[0].Proxy)
+	} else {
+		t.Logf("%s sample = %v \t found = %v", name, results[0].Proxy, len(results))
+	}
+}
+
+func TestwebanetlabsP(t *testing.T) {
 	flag.Parse()
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	results := WebanetlabsP(ctx)
-	name := "WebanetlabsP(ctx)"
+	results := webanetlabsP(ctx)
+	name := "webanetlabsP(ctx)"
 	if len(results) == 0 {
 
 		if *testRresults {
@@ -297,8 +297,8 @@ func TestCheckerproxyP(t *testing.T) {
 func TestProxylistMe(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	results := ProxylistMeP(ctx)
-	name := "ProxylistMeP(ctx)"
+	results := proxylistMeP(ctx)
+	name := "proxylistMeP(ctx)"
 	if len(results) == 0 {
 		if *testRresults {
 			t.Errorf("%s didn't return results.", name)

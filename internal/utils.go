@@ -37,7 +37,7 @@ func check(e error) {
 }
 
 // IncrFdLimit attempts to increase max file handles per process
-func IncrFdLimit() (int, uint64){
+func IncrFdLimit() (int, uint64) {
 	var newLimit uint64
 	oldLimit, err := fdlimit.Current()
 	if err != nil {
@@ -50,8 +50,6 @@ func IncrFdLimit() (int, uint64){
 	}
 	return oldLimit, newLimit
 }
-
-
 
 //--------------------------------------------------------------------------
 

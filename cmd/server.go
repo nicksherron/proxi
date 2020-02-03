@@ -118,7 +118,6 @@ func workerN() int {
 
 }
 
-
 func maxmindPath() string {
 	maxmindFile := "GeoLite2-Country.mmdb"
 	f := filepath.Join(dataHome(), maxmindFile)
