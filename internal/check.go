@@ -354,6 +354,10 @@ func CheckInit() {
 			go proxyCheck(proxy)
 			if atomic.CompareAndSwapInt64(&counter, limit, 0) {
 				wgC.Wait()
+				mutex.Lock()
+				proxyChan <- checkedProxies
+				checkedProxies = Proxies{}
+				mutex.Unlock()
 			}
 		}
 	}()
