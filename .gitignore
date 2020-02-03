@@ -1,0 +1,7 @@
+bin
+vendor
+dist
+dist.bk
+openapi.json
+docs/openapi.json
+internal/test_data
