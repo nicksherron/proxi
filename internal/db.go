@@ -49,7 +49,7 @@ type Model struct {
 type Proxy struct {
 	Model
 	AvgResponse  string `gorm:"-" json:"avg_response"`
-	ResponseTime int64    `json:"-" gorm:"default:0"`
+	ResponseTime int64  `json:"-" gorm:"default:0"`
 	CheckCount   uint   `json:"check_count" gorm:"default:0"`
 	Country      string `json:"country" `
 	FailCount    uint   `json:"fail_count" gorm:"default:0"`
@@ -158,7 +158,7 @@ func dbCacheStats() {
 
 //--------------------------------------------------------------------------------------
 
-func loadDb(proxy *Proxy)  {
+func loadDb(proxy *Proxy) {
 	_, err := DB.Exec(`insert into proxies("created_at", "updated_at", "check_count", "country", "fail_count",
  							"last_status", "proxy", "timeout_count", "source", "success_count", "anonymous", "losing_streak")
  							VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
@@ -207,7 +207,9 @@ func findProxy(p string) interface{} {
 	var row Proxy
 	err := DB.QueryRow(`select "response_time",  "anonymous",   "check_count",   "country",   "created_at",   "fail_count",   "id",
    						       "last_status",   "proxy",   "source",   "success_count",   "timeout_count",
-   						      "updated_at"  from proxies where proxy = $1`, p).Scan(&row)
+   						      "updated_at"  from proxies where proxy = $1`, p).Scan(&row.ResponseTime, &row.Anonymous,
+		&row.CheckCount, &row.Country, &row.CreatedAt, &row.FailCount, &row.ID,
+		&row.LastStatus, &row.Proxy, &row.Source, &row.SuccessCount, &row.TimeoutCount, &row.UpdatedAt)
 
 	if err != nil {
 		log.Println(err)
