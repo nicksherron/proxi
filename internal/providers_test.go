@@ -31,10 +31,10 @@ var (
 // TODO: Not sure if these are very idiomatic. Maybe use test table for providers instead of separate functions but still perform each test regardless of success.
 
 func TestKuaidailiP(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	results := KuaidailiP(ctx, 100)
-	name := "KuaidailiP(ctx100)"
+	results := KuaidailiP(ctx, 10)
+	name := "KuaidailiP(ctx)"
 	if len(results) == 0 {
 		if *testRresults {
 			t.Errorf("%s didn't return results.", name)
@@ -297,8 +297,8 @@ func TestCheckerproxyP(t *testing.T) {
 func TestProxylistMe(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	results := ProxylistMeP(ctx, 2)
-	name := "ProxylistMeP(ctx2)"
+	results := ProxylistMeP(ctx)
+	name := "ProxylistMeP(ctx)"
 	if len(results) == 0 {
 		if *testRresults {
 			t.Errorf("%s didn't return results.", name)

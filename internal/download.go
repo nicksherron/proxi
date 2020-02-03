@@ -149,10 +149,11 @@ func DownloadProxies() Proxies {
 	wgD.Add(16)
 	var providerProxies Proxies
 
+	ctxTimeout := time.Minute
 	// Download from providers
 	go func() {
 		defer wgD.Done()
-		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 		defer cancel()
 		results := FreeproxylistsP(ctx)
 		mutex.Lock()
@@ -161,7 +162,7 @@ func DownloadProxies() Proxies {
 	}()
 	go func() {
 		defer wgD.Done()
-		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 		defer cancel()
 		results := WebanetlabsP(ctx)
 		mutex.Lock()
@@ -170,7 +171,7 @@ func DownloadProxies() Proxies {
 	}()
 	go func() {
 		defer wgD.Done()
-		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 		defer cancel()
 		results := CheckerproxyP(ctx)
 		mutex.Lock()
@@ -179,7 +180,7 @@ func DownloadProxies() Proxies {
 	}()
 	go func() {
 		defer wgD.Done()
-		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 		defer cancel()
 		results := ProxyListP(ctx)
 		mutex.Lock()
@@ -188,7 +189,7 @@ func DownloadProxies() Proxies {
 	}()
 	go func() {
 		defer wgD.Done()
-		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 		defer cancel()
 		results := AliveproxyP(ctx)
 		mutex.Lock()
@@ -197,16 +198,16 @@ func DownloadProxies() Proxies {
 	}()
 	go func() {
 		defer wgD.Done()
-		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 		defer cancel()
-		results := KuaidailiP(ctx, 100)
+		results := KuaidailiP(ctx, 0)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
 	}()
 	go func() {
 		defer wgD.Done()
-		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 		defer cancel()
 		results := FeiyiproxyP(ctx)
 		mutex.Lock()
@@ -215,7 +216,7 @@ func DownloadProxies() Proxies {
 	}()
 	go func() {
 		defer wgD.Done()
-		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 		defer cancel()
 		results := YipP(ctx)
 		mutex.Lock()
@@ -224,7 +225,7 @@ func DownloadProxies() Proxies {
 	}()
 	go func() {
 		defer wgD.Done()
-		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 		defer cancel()
 		results := Ip3366P(ctx)
 		mutex.Lock()
@@ -233,16 +234,16 @@ func DownloadProxies() Proxies {
 	}()
 	go func() {
 		defer wgD.Done()
-		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 		defer cancel()
-		results := ProxylistMeP(ctx,100)
+		results := ProxylistMeP(ctx)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
 	}()
 	go func() {
 		defer wgD.Done()
-		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 		defer cancel()
 		results := ProxylistDownloadP(ctx)
 		mutex.Lock()
@@ -251,7 +252,7 @@ func DownloadProxies() Proxies {
 	}()
 	go func() {
 		defer wgD.Done()
-		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 		defer cancel()
 		results := BlogspotP(ctx)
 		mutex.Lock()
@@ -260,7 +261,7 @@ func DownloadProxies() Proxies {
 	}()
 	go func() {
 		defer wgD.Done()
-		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 		defer cancel()
 		results := ProxP(ctx)
 		mutex.Lock()
@@ -269,7 +270,7 @@ func DownloadProxies() Proxies {
 	}()
 	go func() {
 		defer wgD.Done()
-		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 		defer cancel()
 		results := MyProxyP(ctx)
 		mutex.Lock()
@@ -278,7 +279,7 @@ func DownloadProxies() Proxies {
 	}()
 	go func() {
 		defer wgD.Done()
-		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 		defer cancel()
 		results := XseoP(ctx)
 		mutex.Lock()
@@ -287,7 +288,7 @@ func DownloadProxies() Proxies {
 	}()
 	go func() {
 		defer wgD.Done()
-		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 		defer cancel()
 		results := GithubClarketmP(ctx)
 		mutex.Lock()
