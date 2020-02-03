@@ -171,8 +171,7 @@ func hostIP() string {
 	return jsonBody.Origin
 }
 
-func proxyCheck(proxy *Proxy) {
-
+func proxyCheck(proxy *Proxy, proxyChan chan *Proxy) {
 	defer func() {
 		wgC.Done()
 		if Progress {
@@ -184,44 +183,48 @@ func proxyCheck(proxy *Proxy) {
 			if strings.Contains(fmt.Sprintf("%v", r), "Client.Timeout exceeded while awaiting headers") {
 				proxy.LastStatus = "timeout"
 				proxy.TimeoutCount++
-				mutex.Lock()
-				checkedProxies = append(checkedProxies, proxy)
-				mutex.Unlock()
+				//mutex.Lock()
+				//checkedProxies = append(checkedProxies, proxy)
+				//mutex.Unlock()
+				proxyChan <- proxy
 				return
 			}
 			proxy.LastStatus = "fail"
 			proxy.FailCount++
-			mutex.Lock()
-			checkedProxies = append(checkedProxies, proxy)
-			mutex.Unlock()
+			//mutex.Lock()
+			//checkedProxies = append(checkedProxies, proxy)
+			//mutex.Unlock()
+			proxyChan <- proxy
 			return
 		}
 	}()
 
 	if proxy.LosingStreak >= 5 {
 		proxy.Deleted = true
-		mutex.Lock()
-		checkedProxies = append(checkedProxies, proxy)
-		mutex.Unlock()
-
+		//mutex.Lock()
+		//checkedProxies = append(checkedProxies, proxy)
+		//mutex.Unlock()
+		proxyChan <- proxy
 		return
 	}
 
 	if proxy.CheckCount > 5 {
 		if float64(proxy.FailCount)/float64(proxy.CheckCount) >= 0.90 {
 			proxy.Deleted = true
-			mutex.Lock()
-			checkedProxies = append(checkedProxies, proxy)
-			mutex.Unlock()
+			//mutex.Lock()
+			//checkedProxies = append(checkedProxies, proxy)
+			//mutex.Unlock()
+			proxyChan <- proxy
 			return
 		}
 	}
 	if proxy.CheckCount > 10 {
 		if float64(proxy.FailCount)/float64(proxy.CheckCount) >= 0.80 {
 			proxy.Deleted = true
-			mutex.Lock()
-			checkedProxies = append(checkedProxies, proxy)
-			mutex.Unlock()
+			//mutex.Lock()
+			//checkedProxies = append(checkedProxies, proxy)
+			//mutex.Unlock()
+			proxyChan <- proxy
 			return
 		}
 	}
@@ -243,7 +246,6 @@ func proxyCheck(proxy *Proxy) {
 		Timeout:   Timeout,
 		Transport: tr,
 	}
-
 
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout+5*time.Second)
 	defer cancel()
@@ -278,7 +280,7 @@ func proxyCheck(proxy *Proxy) {
 	if proxy.ResponseTime == 0 {
 		proxy.ResponseTime = int64(done)
 	} else {
-		proxy.ResponseTime = proxy.ResponseTime + int64(done - start/2)
+		proxy.ResponseTime = proxy.ResponseTime + int64(done-start/2)
 	}
 
 	if strings.Contains(jsonBody.Origin, realIP) {
@@ -290,9 +292,10 @@ func proxyCheck(proxy *Proxy) {
 	proxy.LastStatus = "good"
 	proxy.LosingStreak = 0
 	proxy.SuccessCount++
-	mutex.Lock()
-	checkedProxies = append(checkedProxies, proxy)
-	mutex.Unlock()
+	//mutex.Lock()
+	//checkedProxies = append(checkedProxies, proxy)
+	//mutex.Unlock()
+	proxyChan <- proxy
 
 }
 
@@ -315,7 +318,7 @@ func CheckInit() {
 	}
 
 	fmt.Print("\nStarting proxy checks...\n\n")
-	log.SetOutput(nil)
+	//log.SetOutput(nil)
 	atomic.StoreInt64(&testCount, 0)
 	realIP = hostIP()
 	counter = 0
@@ -324,6 +327,20 @@ func CheckInit() {
 		bar = pb.ProgressBarTemplate(barTemplate).Start(len(proxies)).SetMaxWidth(80)
 		bar.Set("message", "Testing proxies\t")
 	}
+	quit := make(chan int)
+	proxyChan := make(chan *Proxy)
+
+
+	go func() {
+		for {
+			select {
+			case <-quit:
+				return
+			case p := <- proxyChan:
+				dbInsert(p)
+			}
+		}
+	}()
 
 	begin := time.Now()
 	go func() {
@@ -331,21 +348,22 @@ func CheckInit() {
 		for _, proxy := range proxies {
 			wgC.Add(1)
 			atomic.AddInt64(&counter, 1)
-			go proxyCheck(proxy)
+			go proxyCheck(proxy, proxyChan)
 			if atomic.CompareAndSwapInt64(&counter, limit, 0) {
 				wgC.Wait()
-				storeCheckedProxies()
+				//storeCheckedProxies()
 			}
 		}
 	}()
 	wgLoop.Wait()
 	if counter > 0 {
 		wgC.Wait()
-		storeCheckedProxies()
+		//storeCheckedProxies()
 	}
 	if Progress {
 		bar.Finish()
 	}
+	quit <- 0
 	log.SetOutput(os.Stderr)
 	fmt.Println("Done checking proxies.")
 	busy = false
@@ -353,15 +371,16 @@ func CheckInit() {
 	log.Println("took ", time.Since(begin))
 }
 
-func storeCheckedProxies() {
-	log.SetOutput(os.Stderr)
-	dbPrepWrite()
-	mutex.Lock()
-	proxies := checkedProxies
-	checkedProxies = Proxies{}
-	mutex.Unlock()
-	for _, proxy := range proxies {
-		dbInsert(proxy)
-	}
-	log.SetOutput(nil)
-}
+
+//func storeCheckedProxies() {
+//	log.SetOutput(os.Stderr)
+//	dbPrepWrite()
+//	mutex.Lock()
+//	proxies := checkedProxies
+//	checkedProxies = Proxies{}
+//	mutex.Unlock()
+//	for _, proxy := range proxies {
+//		dbInsert(proxy)
+//	}
+//	log.SetOutput(nil)
+//}

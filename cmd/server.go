@@ -34,6 +34,7 @@ import (
 var (
 	updateFreq        int
 	downloadCheckInit bool
+	checkInit         bool
 	traceProfile      string
 	cpuProfile        string
 	memProfile        string
@@ -61,6 +62,9 @@ var (
 			if downloadCheckInit {
 				time.Sleep(10 * time.Millisecond)
 				go internal.DownloadInit()
+			} else if checkInit {
+				time.Sleep(10 * time.Millisecond)
+				go internal.CheckInit()
 			}
 			internal.API()
 		},
@@ -73,6 +77,7 @@ func init() {
 	serverCmd.PersistentFlags().StringVar(&cpuProfile, "cpu", "", "Write cpu profile to file.")
 	serverCmd.PersistentFlags().StringVar(&memProfile, "mem", "", "Write memory profile to file.")
 	serverCmd.PersistentFlags().BoolVar(&downloadCheckInit, "init", false, "Initialize proxy download and check process after server start.")
+	serverCmd.PersistentFlags().BoolVar(&checkInit, "check", false, "Initialize proxy  check process after server start.")
 	serverCmd.PersistentFlags().StringVarP(&internal.Addr, "addr", "a", listenAddr(), "Ip and port to listen and serve on.")
 	serverCmd.PersistentFlags().StringVar(&internal.MaxmindFilePath, "maxmind-file", maxmindPath(), "Maxmind country db file. Downloads if default doesn't exist.")
 	serverCmd.PersistentFlags().StringVar(&internal.DbPath, "db", dbPath(), "Sqlite3 backend storage file location.")
