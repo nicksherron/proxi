@@ -274,8 +274,12 @@ func getProxyAll() Proxies {
 	var proxies Proxies
 	rows, err := DB.Query(`select "resp_time", "anonymous",   "check_count",   "country",   "created_at",   "fail_count",   "id",
    						       "last_status",   "proxy",   "source",   "success_count",   "timeout_count",
-   						      "updated_at"  from proxies)`)
+   						      "updated_at"  from proxies`)
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer rows.Close()
+
 	for rows.Next() {
 		var row Proxy
 		err = rows.Scan(&row.RespTime, &row.Anonymous, &row.CheckCount, &row.Country, &row.CreatedAt, &row.FailCount, &row.ID,
