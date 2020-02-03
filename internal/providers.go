@@ -164,7 +164,7 @@ func webanetlabsP(ctx context.Context) Proxies {
 	}
 }
 
-func CheckerproxyP(ctx context.Context) Proxies {
+func checkerproxyP(ctx context.Context) Proxies {
 
 	defer ctx.Done()
 	start := time.Now()
@@ -709,22 +709,29 @@ func proxylistDownloadP(ctx context.Context) Proxies {
 	var (
 		foundProxies Proxies
 		source       = "proxy-list.download"
+		urls         = []string{
+			"https://www.proxy-list.download/api/v1/get?type=http",
+			"https://www.proxy-list.download/api/v0/get?l=en&t=http",
+			"https://www.proxy-list.download/api/v0/get?l=en&t=https",
+		}
 	)
 
 	done := make(chan bool)
 	go func() {
-		body, err := get("https://www.proxy-list.download/api/v1/get?type=http")
-		if err != nil {
-			return
-		}
-		for _, proxy := range findAllTemplate(reProxy, body, templateProxy) {
-			if proxy == "" {
-				continue
+		for _, u := range urls {
+			body, err := get(u)
+			if err != nil {
+				return
 			}
-			p := Proxy{Proxy: proxy, Source: source}
-			foundProxies = append(foundProxies, &p)
+			for _, proxy := range findAllTemplate(reProxy, body, templateProxy) {
+				if proxy == "" {
+					continue
+				}
+				p := Proxy{Proxy: proxy, Source: source}
+				foundProxies = append(foundProxies, &p)
+			}
+			done <- true
 		}
-		done <- true
 	}()
 	for {
 		select {
@@ -741,6 +748,47 @@ func proxylistDownloadP(ctx context.Context) Proxies {
 		}
 	}
 }
+
+
+func usProxyP(ctx context.Context) Proxies {
+	defer ctx.Done()
+	start := time.Now()
+	var (
+		foundProxies Proxies
+		source       = "us-proxy.org"
+	)
+
+	done := make(chan bool)
+	go func() {
+			body, err := get("https://us-proxy.org/")
+			if err != nil {
+				return
+			}
+			for _, proxy := range findAllTemplate(reProxy, body, templateProxy) {
+				if proxy == "" {
+					continue
+				}
+				p := Proxy{Proxy: proxy, Source: source}
+				foundProxies = append(foundProxies, &p)
+			}
+			done <- true
+	}()
+	for {
+		select {
+		case <-ctx.Done():
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+			}
+			return foundProxies
+		case <-done:
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+			}
+			return foundProxies
+		}
+	}
+}
+
 
 func blogspotP(ctx context.Context) Proxies {
 	defer ctx.Done()
