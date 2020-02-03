@@ -227,11 +227,13 @@ func proxyCheck(proxy *Proxy) {
 	}
 
 	proxy.CheckCount++
+	proxy.Judge = judgeUrl
 
 	prox := proxy.Proxy
 	proxyURL, err := url.Parse(prox)
 	check(err)
 
+	start := time.Now().Nanosecond()
 	tr := &http.Transport{
 		Proxy:               http.ProxyURL(proxyURL),
 		TLSHandshakeTimeout: 60 * time.Second,
@@ -242,11 +244,9 @@ func proxyCheck(proxy *Proxy) {
 		Transport: tr,
 	}
 
-	start := time.Now().Nanosecond()
+
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout+5*time.Second)
 	defer cancel()
-
-	proxy.Judge = judgeUrl
 
 	req, err := http.NewRequestWithContext(ctx, "GET", judgeUrl, nil)
 	check(err)
@@ -260,10 +260,9 @@ func proxyCheck(proxy *Proxy) {
 	if resp.StatusCode != 200 {
 		return
 	}
+
 	body, err := ioutil.ReadAll(resp.Body)
 	check(err)
-	// stop response time recording after body has been read
-	done := time.Now().Nanosecond()
 
 	var jsonBody httpBin
 	err = json.Unmarshal(body, &jsonBody)
@@ -272,6 +271,8 @@ func proxyCheck(proxy *Proxy) {
 	if jsonBody.Origin == "" {
 		return
 	}
+	// stop response time recording after body has been read
+	done := time.Now().Nanosecond()
 
 	// make sure body is valid before updating response time
 	if proxy.ResponseTime == 0 {
