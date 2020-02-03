@@ -1,5 +1,10 @@
-proxi
-===
+
+#proxi
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/nicksherron/proxi)](https://goreportcard.com/report/github.com/nicksherron/proxi)
+
+
+
 Proxi runs scheduled jobs for finding and checking proxies with a rest api for querying results.
 It can find and check over 25k proxies in under 5 minutes.
 
@@ -51,11 +56,7 @@ or
 curl localhost:4444/get
 ```
 
-
-
 ![sreenshot](media/proxi.png)
-
-
 
 
 ```shell script
