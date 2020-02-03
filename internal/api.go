@@ -80,7 +80,7 @@ func API() {
 		var d proxyLookup
 		c.ShouldBind(&d)
 		result := deleteProxy(d.Proxy)
-		c.String(http.StatusOK, string(result))
+		c.IndentedJSON(http.StatusOK, gin.H{"deleted": result})
 	})
 
 	r.POST("/find", func(c *gin.Context) {
@@ -120,7 +120,6 @@ func API() {
 		result := DB.Stats()
 		c.IndentedJSON(http.StatusOK, result)
 	})
-
 
 	r.GET("/refresh", func(c *gin.Context) {
 		if busy {

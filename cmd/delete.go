@@ -19,6 +19,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -36,7 +37,7 @@ var (
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.Flags().Parse(args)
-			deleteProxy(args[0])
+			deleteProxy(strings.TrimSpace(args[0]))
 		},
 	}
 )

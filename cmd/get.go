@@ -41,7 +41,7 @@ var (
 func init() {
 	rootCmd.AddCommand(getCmd)
 	getCmd.PersistentFlags().StringVarP(&address, "url", "u", fmt.Sprintf("http://%v", listenAddr()), "Url of running ProxyPool server.")
-	getCmd.PersistentFlags().IntVarP(&numProxies, "limit", "l", 1, "Number of proxies to return.")
+	getCmd.PersistentFlags().IntVarP(&numProxies, "num", "n", 1, "Number of proxies to return.")
 	getCmd.PersistentFlags().BoolVar(&anon, "anon", false, "Only return anonymous proxies.")
 	getCmd.PersistentFlags().StringVarP(&country, "country", "c", "", "Filter by country. Format is 'US', 'CH' etc.")
 	getCmd.PersistentFlags().BoolVar(&getAll, "all", false, "Return all proxies ignoring filters or status. Warning! may produce lots of results.")

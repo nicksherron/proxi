@@ -289,7 +289,7 @@ func getProxyAll() Proxies {
 
 }
 
-func deleteProxy(p string) int64 {
+func deleteProxy(p string) interface{} {
 	row, err := DB.Exec(`delete from proxies where proxy = $1`, p)
 	if err != nil {
 		log.Fatal(err)
@@ -298,7 +298,6 @@ func deleteProxy(p string) int64 {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(result)
 	return result
 }
 
