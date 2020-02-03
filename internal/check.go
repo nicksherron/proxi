@@ -289,7 +289,6 @@ func proxyCheck(proxy *Proxy) {
 
 // CheckInit checks all proxies from GormDB to see if they are transparent or anonymous and if they work.
 func CheckInit() {
-	begin := time.Now()
 	busy = true
 	resolveJudges()
 	if os.Getenv("PROXI_DEBUG_JUDGES") == "1" {
