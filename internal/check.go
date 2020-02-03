@@ -318,7 +318,7 @@ func CheckInit() {
 	}
 
 	fmt.Print("\nStarting proxy checks...\n\n")
-	//log.SetOutput(nil)
+	log.SetOutput(nil)
 	atomic.StoreInt64(&testCount, 0)
 	realIP = hostIP()
 	counter = 0
@@ -381,15 +381,4 @@ func CheckInit() {
 
 }
 
-//func storeCheckedProxies() {
-//	log.SetOutput(os.Stderr)
-//	dbPrepWrite()
-//	mutex.Lock()
-//	proxies := checkedProxies
-//	checkedProxies = Proxies{}
-//	mutex.Unlock()
-//	for _, proxy := range proxies {
-//		dbInsert(proxy)
-//	}
-//	log.SetOutput(nil)
-//}
+
