@@ -30,21 +30,13 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	cuckoo "github.com/seiflotfy/cuckoofilter"
 )
 
 var (
-	// CheckProxiesVar is to determine if proxies are to be checked
-	CheckProxiesVar bool
-	// DownloadProxiesVar is to determine if proxies are to be downloaded
-	DownloadProxiesVar bool
 	mutex              = &sync.Mutex{}
 	busy               bool
-	// Deadline is the time in seconds that DownloadProxies sleeps before returing with results. 0 means it waits for all results.
-	Deadline int
 	wgD      sync.WaitGroup
-	reader io.ReadCloser
+	reader   io.ReadCloser
 )
 
 func findSubmatchRange(regex *regexp.Regexp, str string) []string {
@@ -109,7 +101,6 @@ func get(u string) (string, error) {
 
 // DownloadProxies downloads proxies from providers.
 func DownloadProxies() Proxies {
-	busy = true
 	log.Println("\rStarting proxy downloads...")
 	wgD.Add(16)
 	var providerProxies Proxies
@@ -152,7 +143,7 @@ func DownloadProxies() Proxies {
 	}()
 	go func() {
 		defer wgD.Done()
-		results := KuaidailiP(0)
+		results := KuaidailiP(10)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
@@ -180,7 +171,7 @@ func DownloadProxies() Proxies {
 	}()
 	go func() {
 		defer wgD.Done()
-		results := ProxylistMeP(0)
+		results := ProxylistMeP(10)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
@@ -228,14 +219,6 @@ func DownloadProxies() Proxies {
 		mutex.Unlock()
 	}()
 
-	if Deadline != 0 {
-		time.Sleep(time.Duration(Deadline) * time.Second)
-		mutex.Lock()
-		ret := providerProxies
-		mutex.Unlock()
-		return ret
-
-	}
 	wgD.Wait()
 	return providerProxies
 
@@ -243,16 +226,13 @@ func DownloadProxies() Proxies {
 
 // DownloadInit initializes DownloadProxies and saves results to GormDB
 func DownloadInit() {
-
+	busy = true
 	validMaxmind = true
-
 	providerResults := DownloadProxies()
-
 	ipDB, err := maxmindDb()
 	if err != nil {
 		validMaxmind = false
 	}
-
 	var tmpfile *os.File
 	dumpResults := false
 	if os.Getenv("PROXYPOOL_DUMP") == "1" {
@@ -263,34 +243,23 @@ func DownloadInit() {
 		dumpResults = true
 
 	}
-	i := 0
-	n := uint(len(providerResults))
-	cf := cuckoo.NewFilter(n)
 	dbPrepWrite()
 	for _, v := range providerResults {
-		if cf.InsertUnique([]byte(v.Proxy)) {
-			outIP := strings.Split(strings.ReplaceAll(v.Proxy, "http://", ""), ":")[0]
-			ip := net.ParseIP(outIP)
-			if ip == nil {
-				continue
-			}
-			if validMaxmind {
-				country, err := ipDB.Country(ip)
-				check(err)
-				v.Country = country.Country.IsoCode
-			}
-			loadDb(v)
-			fmt.Fprintf(os.Stderr, "\rFound %d proxies", i)
-			if dumpResults {
-				fmt.Fprintln(tmpfile, v)
-			}
-			i++
+		outIP := strings.Split(strings.ReplaceAll(v.Proxy, "http://", ""), ":")[0]
+		ip := net.ParseIP(outIP)
+		if ip == nil {
+			continue
+		}
+		if validMaxmind {
+			country, err := ipDB.Country(ip)
+			check(err)
+			v.Country = country.Country.IsoCode
+		}
+		loadDb(v)
+		if dumpResults {
+			fmt.Fprintln(tmpfile, v)
 		}
 	}
-	if CheckProxiesVar {
-		CheckInit()
-	} else {
-		busy = false
-	}
-
+	CheckInit()
+	fmt.Println("Done")
 }

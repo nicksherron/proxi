@@ -324,6 +324,7 @@ func CheckInit() {
 		bar.Set("message", "Testing proxies\t")
 	}
 
+	begin := time.Now()
 	go func() {
 		defer wgLoop.Done()
 		for _, proxy := range proxies {
@@ -347,6 +348,8 @@ func CheckInit() {
 	log.SetOutput(os.Stderr)
 	fmt.Println("Done checking proxies.")
 	busy = false
+
+	log.Println("took ", time.Since(begin))
 }
 
 func storeCheckedProxies() {

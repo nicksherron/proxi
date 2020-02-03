@@ -75,6 +75,6 @@ func StartupMessage() {
 	//color.HiGreen(docsBanner)
 	fmt.Print("\n")
 	log.Printf("Listening and serving HTTP on %v", Addr)
-	fmt.Print("\n\n\n")
+	fmt.Print("\n\n")
 
 }

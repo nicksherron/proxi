@@ -367,6 +367,7 @@ func YipP() Proxies {
 		}(i)
 	}
 	w.Wait()
+
 	if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
 		if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
 			fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
