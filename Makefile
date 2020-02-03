@@ -1,4 +1,4 @@
-.PHONY: all docker-build build clean test help default test-verify run build-darwin build-linux
+.PHONY: all docker-build build clean test help default test-verify run build-darwin build-linux sync
 
 BIN_NAME=proxi
 # dev build for latest release see releases at
@@ -51,3 +51,6 @@ race:
 
 test-providers:
 	go test -v  github.com/nicksherron/proxi/internal   -args -verify
+
+sync:
+	scripts/local/sync.sh
