@@ -348,7 +348,7 @@ func CheckInit() {
 	}
 	wgDB.Add(1)
 	go storeCheckedProxies()
-	wgDB.Done()
+	wgDB.Wait()
 
 	if Progress {
 		bar.Finish()
