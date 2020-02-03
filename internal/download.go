@@ -66,17 +66,59 @@ func findAllTemplate(pattern *regexp.Regexp, html string, template string) []str
 }
 
 func get(u string) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
-
-	defer cancel()
 	client := &http.Client{
-		//Timeout: 60 * time.Second,
+		Timeout: 20 * time.Second,
 	}
-	req, err := http.NewRequestWithContext(ctx, "GET", u, nil)
+	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {
 		return "", err
 	}
-	//req.Header.Set("X-Forwarded-For", fake.IPv4())
+	req.Header.Set("X-Forwarded-For", fake.IPv4())
+	req.Header.Set("User-Agent", `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36`)
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	return string(body), nil
+
+}
+
+func getX(u string) (string, error) {
+	client := &http.Client{
+		Timeout: 20 * time.Second,
+	}
+	req, err := http.NewRequest("GET", u, nil)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("User-Agent", `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36`)
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	return string(body), nil
+
+}
+
+func getKuaidaili(u string) (string, error) {
+	client := &http.Client{
+		Timeout: 20 * time.Second,
+	}
+	req, err := http.NewRequest("GET", u, nil)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("X-Forwarded-For", fake.IPv4())
 	req.Header.Set("User-Agent", `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36`)
 	resp, err := client.Do(req)
 	if err != nil {
@@ -101,29 +143,6 @@ func get(u string) (string, error) {
 
 }
 
-func getX(u string) (string, error) {
-	client := &http.Client{
-		Timeout: 20 * time.Second,
-	}
-	req, err := http.NewRequest("GET", u, nil)
-	if err != nil {
-		return "", err
-	}
-	req.Header.Set("X-Forwarded-For", fake.IPv4())
-	req.Header.Set("User-Agent", `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36`)
-	resp, err := client.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-	return string(body), nil
-
-}
-
 // DownloadProxies downloads proxies from providers.
 func DownloadProxies() Proxies {
 	log.Println("\rStarting proxy downloads...")
@@ -133,112 +152,144 @@ func DownloadProxies() Proxies {
 	// Download from providers
 	go func() {
 		defer wgD.Done()
-		results := FreeproxylistsP()
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+		defer cancel()
+		results := FreeproxylistsP(ctx)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
 	}()
 	go func() {
 		defer wgD.Done()
-		results := WebanetlabsP()
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+		defer cancel()
+		results := WebanetlabsP(ctx)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
 	}()
 	go func() {
 		defer wgD.Done()
-		results := CheckerproxyP()
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+		defer cancel()
+		results := CheckerproxyP(ctx)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
 	}()
 	go func() {
 		defer wgD.Done()
-		results := ProxyListP()
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+		defer cancel()
+		results := ProxyListP(ctx)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
 	}()
 	go func() {
 		defer wgD.Done()
-		results := AliveproxyP()
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+		defer cancel()
+		results := AliveproxyP(ctx)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
 	}()
 	go func() {
 		defer wgD.Done()
-		results := KuaidailiP(10)
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+		defer cancel()
+		results := KuaidailiP(ctx, 100)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
 	}()
 	go func() {
 		defer wgD.Done()
-		results := FeiyiproxyP()
+		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		defer cancel()
+		results := FeiyiproxyP(ctx)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
 	}()
 	go func() {
 		defer wgD.Done()
-		results := YipP()
+		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		defer cancel()
+		results := YipP(ctx)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
 	}()
 	go func() {
 		defer wgD.Done()
-		results := Ip3366P()
+		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		defer cancel()
+		results := Ip3366P(ctx)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
 	}()
 	go func() {
 		defer wgD.Done()
-		results := ProxylistMeP(10)
+		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		defer cancel()
+		results := ProxylistMeP(ctx,100)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
 	}()
 	go func() {
 		defer wgD.Done()
-		results := ProxylistDownloadP()
+		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		defer cancel()
+		results := ProxylistDownloadP(ctx)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
 	}()
 	go func() {
 		defer wgD.Done()
-		results := BlogspotP()
+		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		defer cancel()
+		results := BlogspotP(ctx)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
 	}()
 	go func() {
 		defer wgD.Done()
-		results := ProxP()
+		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		defer cancel()
+		results := ProxP(ctx)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
 	}()
 	go func() {
 		defer wgD.Done()
-		results := MyProxyP()
+		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		defer cancel()
+		results := MyProxyP(ctx)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
 	}()
 	go func() {
 		defer wgD.Done()
-		results := XseoP()
+		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		defer cancel()
+		results := XseoP(ctx)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
 	}()
 	go func() {
 		defer wgD.Done()
-		results := GithubClarketmP()
+		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Minute)
+		defer cancel()
+		results := GithubClarketmP(ctx)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()

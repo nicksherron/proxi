@@ -17,6 +17,7 @@
 package internal
 
 import (
+	"context"
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
@@ -38,7 +39,8 @@ var (
 	templateProxy = "http://${ip}:${port}\n"
 )
 
-func FreeproxylistsP() Proxies {
+func FreeproxylistsP(ctx context.Context) Proxies {
+	defer ctx.Done()
 	start := time.Now()
 	var (
 		foundProxies Proxies
@@ -51,6 +53,7 @@ func FreeproxylistsP() Proxies {
 			"http://www.freeproxylists.com/elite.html",
 		}
 	)
+
 	for _, u := range fplUrls {
 		body, err := get(u)
 		if err != nil {
@@ -60,14 +63,13 @@ func FreeproxylistsP() Proxies {
 		matches := findAllTemplate(fplReID, body, template)
 		for _, match := range matches {
 			w.Add(1)
-			go func(endpoint string) {
+			ipList, err := get(match)
+			if err != nil {
+				continue
+			}
+			go func(body string) {
 				defer w.Done()
-				ipList, err := get(endpoint)
-				if err != nil {
-					return
-				}
-				matched := findAllTemplate(reProxy, ipList, templateProxy)
-
+				matched := findAllTemplate(reProxy, body, templateProxy)
 				for _, proxy := range matched {
 					if proxy == "" {
 						continue
@@ -77,7 +79,7 @@ func FreeproxylistsP() Proxies {
 					foundProxies = append(foundProxies, &p)
 					mu.Unlock()
 				}
-			}(match)
+			}(ipList)
 		}
 		w.Wait()
 	}
@@ -90,7 +92,8 @@ func FreeproxylistsP() Proxies {
 	return foundProxies
 }
 
-func WebanetlabsP() Proxies {
+func WebanetlabsP(ctx context.Context) Proxies {
+	defer ctx.Done()
 	start := time.Now()
 	var (
 		foundProxies Proxies
@@ -131,12 +134,12 @@ func WebanetlabsP() Proxies {
 		fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
 
 	}
-
 	return foundProxies
 }
 
-func CheckerproxyP() Proxies {
+func CheckerproxyP(ctx context.Context) Proxies {
 
+	defer ctx.Done()
 	start := time.Now()
 	var (
 		foundProxies Proxies
@@ -146,6 +149,7 @@ func CheckerproxyP() Proxies {
 		re           = regexp.MustCompile(`(?m)href\s*=\s*['"](/archive/\d{4}-\d{2}-\d{2})['"]`)
 		url          = "https://checkerproxy.net/"
 	)
+
 	body, err := get(url)
 	if err != nil {
 		return Proxies{}
@@ -189,7 +193,8 @@ func CheckerproxyP() Proxies {
 	return foundProxies
 }
 
-func ProxyListP() Proxies {
+func ProxyListP(ctx context.Context) Proxies {
+	defer ctx.Done()
 	start := time.Now()
 	var (
 		foundProxies Proxies
@@ -200,14 +205,14 @@ func ProxyListP() Proxies {
 	)
 	w.Add(10)
 	for i := 1; i < 11; i++ {
-		go func(page int) {
+		u := fmt.Sprintf("http://proxy-list.org/english/index.php?p=%v", i)
+		ipList, err := get(u)
+		if err != nil {
+			continue
+		}
+		go func(html string) {
 			defer w.Done()
-			u := fmt.Sprintf("http://proxy-list.org/english/index.php?p=%v", page)
-			ipList, err := get(u)
-			if err != nil {
-				return
-			}
-			for _, match := range findSubmatchRange(ipBase64, ipList) {
+			for _, match := range findSubmatchRange(ipBase64, html) {
 				if match == "" {
 					continue
 				}
@@ -219,7 +224,7 @@ func ProxyListP() Proxies {
 				foundProxies = append(foundProxies, &p)
 				mu.Unlock()
 			}
-		}(i)
+		}(ipList)
 	}
 	w.Wait()
 
@@ -231,7 +236,8 @@ func ProxyListP() Proxies {
 	return foundProxies
 }
 
-func AliveproxyP() Proxies {
+func AliveproxyP(ctx context.Context) Proxies {
+	defer ctx.Done()
 	start := time.Now()
 	var (
 		foundProxies Proxies
@@ -289,7 +295,8 @@ func AliveproxyP() Proxies {
 	return foundProxies
 }
 
-func FeiyiproxyP() Proxies {
+func FeiyiproxyP(ctx context.Context) Proxies {
+	defer ctx.Done()
 	start := time.Now()
 	var (
 		foundProxies Proxies
@@ -316,7 +323,8 @@ func FeiyiproxyP() Proxies {
 	return foundProxies
 }
 
-func YipP() Proxies {
+func YipP(ctx context.Context) Proxies {
+	defer ctx.Done()
 	start := time.Now()
 	var (
 		largest      int
@@ -376,7 +384,8 @@ func YipP() Proxies {
 	return foundProxies
 }
 
-func Ip3366P() Proxies {
+func Ip3366P(ctx context.Context) Proxies {
+	defer ctx.Done()
 	start := time.Now()
 	var (
 		largest      int
@@ -389,7 +398,7 @@ func Ip3366P() Proxies {
 		url          = "http://www.ip3366.net/free/?stype=1&page=1"
 	)
 
-	body, err := get(url)
+	body, err := getX(url)
 	if err != nil {
 		return Proxies{}
 	}
@@ -411,7 +420,7 @@ func Ip3366P() Proxies {
 		go func(page int) {
 			defer w.Done()
 			u := fmt.Sprintf("http://www.ip3366.net/free/?stype=1&page=%v", page)
-			ipList, err := get(u)
+			ipList, err := getX(u)
 			if err != nil {
 				return
 			}
@@ -436,7 +445,7 @@ func Ip3366P() Proxies {
 	return foundProxies
 }
 
-func KuaidailiP(resultLimit int) Proxies {
+func KuaidailiP(ctx context.Context, resultLimit int) Proxies {
 	start := time.Now()
 	var (
 		largest      int
@@ -448,63 +457,78 @@ func KuaidailiP(resultLimit int) Proxies {
 		reHref       = regexp.MustCompile(`(?m)<a href="/free/inha/(\d+)/">`)
 		url          = "https://www.kuaidaili.com/free/inha/1/"
 	)
-	body, err := getX(url)
-	if err != nil {
-		return Proxies{}
-	}
-	for _, href := range findSubmatchRange(reHref, body) {
-		i, err := strconv.Atoi(href)
+	done := make(chan bool)
+
+	go func() {
+		body, err := getKuaidaili(url)
 		if err != nil {
-			continue
+			return
 		}
-		ints = append(ints, i)
-	}
-	if len(ints) == 0 {
-		return Proxies{}
-	}
-	sort.Ints(ints)
-	// Limit urls to visit if too many results to wait for when testing and what not.
-	if resultLimit != 0 {
-		largest = resultLimit
-	} else {
-		largest = ints[len(ints)-1]
-		largest++
-	}
-	counter := 0
-	for i := 1; i < largest; i++ {
-		w.Add(1)
-		counter++
-		go func(page int) {
-			defer w.Done()
-			u := fmt.Sprintf("https://www.kuaidaili.com/free/inha/%v/", page)
-			ipList, err := getX(u)
+		for _, href := range findSubmatchRange(reHref, body) {
+			i, err := strconv.Atoi(href)
 			if err != nil {
-				return
+				continue
 			}
-			for _, proxy := range findAllTemplate(reProxy, ipList, templateProxy) {
-				if proxy == "" {
-					continue
+			ints = append(ints, i)
+		}
+		if len(ints) == 0 {
+			return
+		}
+		sort.Ints(ints)
+		// Limit urls to visit if too many results to wait for when testing and what not.
+		if resultLimit != 0 {
+			largest = resultLimit
+		} else {
+			largest = ints[len(ints)-1]
+			largest++
+		}
+		counter := 0
+		for i := 1; i < largest; i++ {
+			w.Add(1)
+			counter++
+			u := fmt.Sprintf("https://www.kuaidaili.com/free/inha/%v/", i)
+			go func(endpoint string) {
+				defer w.Done()
+				ipList, err := getKuaidaili(endpoint)
+				if err != nil {
+					return
 				}
-				p := Proxy{Proxy: proxy, Source: source}
-				mu.Lock()
-				foundProxies = append(foundProxies, &p)
-				mu.Unlock()
+				for _, proxy := range findAllTemplate(reProxy, ipList, templateProxy) {
+					if proxy == "" {
+						continue
+					}
+					p := Proxy{Proxy: proxy, Source: source}
+					mu.Lock()
+					foundProxies = append(foundProxies, &p)
+					mu.Unlock()
+				}
+			}(u)
+			if counter >= 25 {
+				w.Wait()
+				counter = 0
 			}
-		}(i)
-		// only 25 goroutines at a time. (1170 urls to get)
-		if counter >= 25 {
-			w.Wait()
-			counter = 0
+		}
+		w.Wait()
+		done <- true
+	}()
+
+	for {
+		select {
+		case <-ctx.Done():
+			if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+			}
+			return foundProxies
+		case <-done:
+			return foundProxies
+		default:
+			time.Sleep(1 * time.Second)
 		}
 	}
-	w.Wait()
-	if os.Getenv("PROXYPOOL_PROVIDER_DEBUG") == "1" {
-		fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
-	}
-	return foundProxies
 }
 
-func ProxylistMeP(resultLimit int) Proxies {
+func ProxylistMeP(ctx context.Context, resultLimit int) Proxies {
+	defer ctx.Done()
 	start := time.Now()
 	var (
 		largest      int
@@ -578,7 +602,8 @@ func ProxylistMeP(resultLimit int) Proxies {
 	return foundProxies
 }
 
-func ProxylistDownloadP() Proxies {
+func ProxylistDownloadP(ctx context.Context) Proxies {
+	defer ctx.Done()
 	start := time.Now()
 	var (
 		foundProxies Proxies
@@ -604,7 +629,8 @@ func ProxylistDownloadP() Proxies {
 	return foundProxies
 }
 
-func BlogspotP() Proxies {
+func BlogspotP(ctx context.Context) Proxies {
+	defer ctx.Done()
 	start := time.Now()
 	var (
 		foundProxies Proxies
@@ -624,7 +650,9 @@ func BlogspotP() Proxies {
 		go func(endpoint string) {
 			u := fmt.Sprintf("http://%v/", endpoint)
 			defer w.Done()
+			mutex.Lock()
 			urlList, err := get(u)
+			mutex.Unlock()
 			if err != nil {
 				return
 			}
@@ -659,7 +687,8 @@ func BlogspotP() Proxies {
 	return foundProxies
 }
 
-func ProxP() Proxies {
+func ProxP(ctx context.Context) Proxies {
+	defer ctx.Done()
 	start := time.Now()
 	var (
 		foundProxies Proxies
@@ -675,14 +704,14 @@ func ProxP() Proxies {
 	}
 	for _, href := range findSubmatchRange(re, urlList) {
 		w.Add(1)
-		go func(endpoint string) {
-			u := fmt.Sprintf("http://www.proxz.com/%v", endpoint)
-			ipList, err := get(u)
-			if err != nil {
-				return
-			}
+		u := fmt.Sprintf("http://www.proxz.com/%v", href)
+		ipList, err := get(u)
+		if err != nil {
+			continue
+		}
+		go func(html string) {
 			defer w.Done()
-			for _, proxy := range findAllTemplate(reProxy, ipList, templateProxy) {
+			for _, proxy := range findAllTemplate(reProxy, html, templateProxy) {
 				if proxy == "" {
 					continue
 				}
@@ -691,7 +720,7 @@ func ProxP() Proxies {
 				foundProxies = append(foundProxies, &p)
 				mu.Unlock()
 			}
-		}(href)
+		}(ipList)
 	}
 	w.Wait()
 
@@ -703,7 +732,8 @@ func ProxP() Proxies {
 	return foundProxies
 }
 
-func MyProxyP() Proxies {
+func MyProxyP(ctx context.Context) Proxies {
+	defer ctx.Done()
 	start := time.Now()
 	var (
 		foundProxies Proxies
@@ -750,7 +780,8 @@ func MyProxyP() Proxies {
 	return foundProxies
 }
 
-func XseoP() Proxies {
+func XseoP(ctx context.Context) Proxies {
+	defer ctx.Done()
 	start := time.Now()
 	var (
 		foundProxies Proxies
@@ -780,7 +811,8 @@ func XseoP() Proxies {
 	return foundProxies
 }
 
-func GithubClarketmP() Proxies {
+func GithubClarketmP(ctx context.Context) Proxies {
+	defer ctx.Done()
 	start := time.Now()
 	var (
 		foundProxies Proxies
