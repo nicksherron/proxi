@@ -327,19 +327,19 @@ func CheckInit() {
 		bar = pb.ProgressBarTemplate(barTemplate).Start(len(proxies)).SetMaxWidth(80)
 		bar.Set("message", "Testing proxies\t")
 	}
-	quit := make(chan int)
+	quit := make(chan bool)
 	proxyChan := make(chan *Proxy)
-	var inserted int64
-	inserted = 0
-
+	inserting  := make(chan bool)
 	go func() {
 		for {
 			select {
 			case <-quit:
 				return
 			case p := <-proxyChan:
+				inserting <- true
 				dbInsert(p)
-				atomic.AddInt64(&inserted, 1)
+			default:
+				inserting <- false
 			}
 		}
 	}()
@@ -353,29 +353,28 @@ func CheckInit() {
 			go proxyCheck(proxy, proxyChan)
 			if atomic.CompareAndSwapInt64(&counter, limit, 0) {
 				wgC.Wait()
-				//storeCheckedProxies()
 			}
 		}
 	}()
 	wgLoop.Wait()
 	if counter > 0 {
 		wgC.Wait()
-		//storeCheckedProxies()
 	}
 	if Progress {
 		bar.Finish()
 	}
 	for {
-		if inserted != int64(len(proxies)) {
+		select {
+		case <- inserting:
 			time.Sleep(1 * time.Second)
-		} else {
-			quit <- 0
+		default:
+			quit <- true
 			log.SetOutput(os.Stderr)
 			fmt.Println("Done checking proxies.")
 			busy = false
-
 			log.Println("took ", time.Since(begin))
 			return
+
 		}
 	}
 
