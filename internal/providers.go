@@ -518,7 +518,7 @@ func Ip3366P(ctx context.Context) Proxies {
 	}
 }
 
-func KuaidailiP(ctx context.Context, resultLimit int) Proxies {
+func KuaidailiP(ctx context.Context) Proxies {
 	start := time.Now()
 	var (
 		largest      int
@@ -548,13 +548,6 @@ func KuaidailiP(ctx context.Context, resultLimit int) Proxies {
 			return
 		}
 		sort.Ints(ints)
-		// Limit urls to visit if too many results to wait for when testing and what not.
-		if resultLimit != 0 {
-			largest = resultLimit
-		} else {
-			largest = ints[len(ints)-1]
-			largest++
-		}
 		counter := 0
 		for i := 1; i < largest; i++ {
 			w.Add(1)

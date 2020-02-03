@@ -33,7 +33,7 @@ var (
 func TestKuaidailiP(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	results := KuaidailiP(ctx, 10)
+	results := KuaidailiP(ctx)
 	name := "KuaidailiP(ctx)"
 	if len(results) == 0 {
 		if *testRresults {

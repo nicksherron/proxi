@@ -200,7 +200,7 @@ func DownloadProxies() Proxies {
 		defer wgD.Done()
 		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 		defer cancel()
-		results := KuaidailiP(ctx, 0)
+		results := KuaidailiP(ctx)
 		mutex.Lock()
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
