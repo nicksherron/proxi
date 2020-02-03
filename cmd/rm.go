@@ -26,9 +26,9 @@ import (
 
 // findCmd represents the stats command
 var (
-	deleteCmd = &cobra.Command{
-		Use:   "delete",
-		Short: "Delete a proxy from the db.",
+	rmCmd = &cobra.Command{
+		Use:   "rm",
+		Short: "Deletes a proxy from the db.",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("requires a proxy argument")
@@ -43,6 +43,6 @@ var (
 )
 
 func init() {
-	rootCmd.AddCommand(deleteCmd)
-	deleteCmd.PersistentFlags().StringVarP(&address, "url", "u", fmt.Sprintf("http://%v", listenAddr()), "Url of running ProxyPool server.")
+	rootCmd.AddCommand(rmCmd)
+	rmCmd.PersistentFlags().StringVarP(&address, "url", "u", fmt.Sprintf("http://%v", listenAddr()), "Url of running ProxyPool server.")
 }
