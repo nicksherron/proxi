@@ -240,7 +240,7 @@ func proxyCheck(proxy *Proxy) {
 		Transport: tr,
 	}
 
-	start := time.Now().Nanosecond()
+	start := time.Now()
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout+5*time.Second)
 	defer cancel()
 
@@ -260,9 +260,8 @@ func proxyCheck(proxy *Proxy) {
 	}
 	body, err := ioutil.ReadAll(resp.Body)
 	check(err)
-	done := time.Now().Nanosecond()
 
-	*proxy.RespTime = time.Duration(done).String()
+	*proxy.RespTime = time.Since(start).String()
 
 	var jsonBody httpBin
 	err = json.Unmarshal(body, &jsonBody)
@@ -271,7 +270,6 @@ func proxyCheck(proxy *Proxy) {
 	if jsonBody.Origin == "" {
 		return
 	}
-
 
 	if strings.Contains(jsonBody.Origin, realIP) {
 		proxy.Anonymous = false
