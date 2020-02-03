@@ -749,7 +749,6 @@ func proxylistDownloadP(ctx context.Context) Proxies {
 	}
 }
 
-
 func usProxyP(ctx context.Context) Proxies {
 	defer ctx.Done()
 	start := time.Now()
@@ -788,7 +787,6 @@ func usProxyP(ctx context.Context) Proxies {
 		}
 	}
 }
-
 
 func blogspotP(ctx context.Context) Proxies {
 	defer ctx.Done()

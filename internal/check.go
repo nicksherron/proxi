@@ -61,7 +61,7 @@ var (
 	resolveCount int
 )
 
-func resolveJudges() {
+func resolveJudges()  {
 
 	suffix := "/get?show_env"
 	sites := []string{
@@ -82,12 +82,20 @@ func resolveJudges() {
 		timer   map[string]time.Duration
 	}{counter: make(map[string]int), timer: make(map[string]time.Duration)}
 
+	var limit int
+
+	if Workers <  100 {
+		limit = Workers
+	} else {
+		limit = 100
+	}
+
 	//	make n requests  with each url and choose whichever one gets done the fastest
 	for _, site := range sites {
 		u := site + suffix
 		var w sync.WaitGroup
 		start := time.Now()
-		for i := 0; i < Workers; i++ {
+		for i := 0; i < limit; i++ {
 			w.Add(1)
 			go func() {
 				defer w.Done()
@@ -124,7 +132,7 @@ func resolveJudges() {
 	}
 	var records []rec
 	for k, v := range sources.timer {
-		if float64(sources.counter[k]/Workers) > .80 {
+		if float64(sources.counter[k]/limit) > .80 {
 			records = append(records, rec{k, int(v)})
 		}
 	}
@@ -289,6 +297,7 @@ func proxyCheck(proxy *Proxy) {
 
 // CheckInit checks all proxies from GormDB to see if they are transparent or anonymous and if they work.
 func CheckInit() {
+	log.Println("Starting proxy checks...")
 	busy = true
 	resolveJudges()
 	if os.Getenv("PROXI_DEBUG_JUDGES") == "1" {
@@ -304,8 +313,6 @@ func CheckInit() {
 	} else {
 		limit = int64(Workers)
 	}
-
-	log.Print("\nStarting proxy checks...\n\n")
 	log.SetOutput(nil)
 	atomic.StoreInt64(&testCount, 0)
 	realIP = hostIP()
@@ -313,7 +320,7 @@ func CheckInit() {
 
 	wgLoop.Add(1)
 	if Progress {
-		bar = pb.ProgressBarTemplate(barTemplate).Start(len(proxies)).SetMaxWidth(80)
+		bar = pb.ProgressBarTemplate(barTemplate).Start(len(proxies)).SetMaxWidth(60)
 		bar.Set("message", "Testing proxies\t")
 	}
 	go func() {
