@@ -5,3 +5,4 @@ dist.bk
 openapi.json
 docs/openapi.json
 internal/test_data
+scripts/local
