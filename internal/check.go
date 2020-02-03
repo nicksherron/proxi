@@ -46,6 +46,7 @@ var (
 	counter        int64
 	realIP         string
 	wgC            sync.WaitGroup
+	wgDB			sync.WaitGroup
 	wgLoop         sync.WaitGroup
 	// Workers controls number of max goroutines at a time for checking proxies.
 	Workers int
@@ -203,7 +204,6 @@ func proxyCheck(proxy *Proxy) {
 		mutex.Lock()
 		checkedProxies = append(checkedProxies, proxy)
 		mutex.Unlock()
-
 		return
 	}
 
@@ -262,7 +262,6 @@ func proxyCheck(proxy *Proxy) {
 	}
 	body, err := ioutil.ReadAll(resp.Body)
 	check(err)
-	// stop response time recording after body has been read
 	done := time.Now().Nanosecond()
 
 	var jsonBody httpBin
@@ -297,6 +296,7 @@ func proxyCheck(proxy *Proxy) {
 
 // CheckInit checks all proxies from GormDB to see if they are transparent or anonymous and if they work.
 func CheckInit() {
+	begin := time.Now()
 	busy = true
 	resolveJudges()
 	if os.Getenv("PROXYPOOL_DEBUG_JUDGES") == "1" {
@@ -334,6 +334,7 @@ func CheckInit() {
 				wgC.Wait()
 				loops++
 				if loops >= 3 {
+					wgDB.Add(1)
 					go storeCheckedProxies()
 					loops = 0
 				}
@@ -347,16 +348,18 @@ func CheckInit() {
 	}
 
 	storeCheckedProxies()
+	wgDB.Done()
 
 	if Progress {
 		bar.Finish()
 	}
 	log.SetOutput(os.Stderr)
-	fmt.Println("Done checking proxies.")
+	fmt.Println("Done checking proxies. Took ", time.Since(begin))
 	busy = false
 }
 
 func storeCheckedProxies() {
+	defer wgDB.Done()
 	dbPrepWrite()
 	mutex.Lock()
 	proxies := checkedProxies
