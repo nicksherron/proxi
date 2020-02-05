@@ -304,6 +304,10 @@ var doc = `
             "type": "string",
             "example": "http://59.91.121.113:35665"
           },
+          "response_time" : {
+            "type": "string",
+            "example": "900ms"
+          },
           "timeout_count": {
             "type": "integer",
             "example": 1
