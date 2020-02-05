@@ -30,47 +30,49 @@ var (
 
 // TODO: Not sure if these are very idiomatic. Maybe use test table for providers instead of separate functions but still perform each test regardless of success.
 
+func TestGithubSunny9577(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+	defer cancel()
+	results := githubSunny9577(ctx)
+	name := "githubSunny9577(ctx)"
+	if len(results) == 0 {
+		if *testRresults {
+			t.Errorf("%s didn't return results.", name)
+		}
+		return
+	}
+	if !re.MatchString(results[0].Proxy) {
+		t.Errorf("%s sample = %v; expected url pattern matching http://121.139.218.165:31409", name, results[0].Proxy)
+	} else {
+		t.Logf("%s sample = %v \t found = %v", name, results[0].Proxy, len(results))
+	}
+}
+
+
+
+func TestGithubTheSpeedP(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+	defer cancel()
+	results := githubTheSpeedP(ctx)
+	name := "githubTheSpeedP(ctx)"
+	if len(results) == 0 {
+		if *testRresults {
+			t.Errorf("%s didn't return results.", name)
+		}
+		return
+	}
+	if !re.MatchString(results[0].Proxy) {
+		t.Errorf("%s sample = %v; expected url pattern matching http://121.139.218.165:31409", name, results[0].Proxy)
+	} else {
+		t.Logf("%s sample = %v \t found = %v", name, results[0].Proxy, len(results))
+	}
+}
+
 func TestUsProxyP(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 	results := usProxyP(ctx)
 	name := "usProxyP(ctx)"
-	if len(results) == 0 {
-		if *testRresults {
-			t.Errorf("%s didn't return results.", name)
-		}
-		return
-	}
-	if !re.MatchString(results[0].Proxy) {
-		t.Errorf("%s sample = %v; expected url pattern matching http://121.139.218.165:31409", name, results[0].Proxy)
-	} else {
-		t.Logf("%s sample = %v \t found = %v", name, results[0].Proxy, len(results))
-	}
-}
-
-func TestKuaidailiP(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
-	defer cancel()
-	results := kuaidailiP(ctx)
-	name := "kuaidailiP(ctx)"
-	if len(results) == 0 {
-		if *testRresults {
-			t.Errorf("%s didn't return results.", name)
-		}
-		return
-	}
-	if !re.MatchString(results[0].Proxy) {
-		t.Errorf("%s sample = %v; expected url pattern matching http://121.139.218.165:31409", name, results[0].Proxy)
-	} else {
-		t.Logf("%s sample = %v \t found = %v", name, results[0].Proxy, len(results))
-	}
-}
-
-func TestFeiyiproxyP(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
-	defer cancel()
-	results := feiyiproxyP(ctx)
-	name := "feiyiproxyP(ctx)"
 	if len(results) == 0 {
 		if *testRresults {
 			t.Errorf("%s didn't return results.", name)
@@ -120,23 +122,6 @@ func TestIp3366P(t *testing.T) {
 	}
 }
 
-func TestGithubClarketmP(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
-	defer cancel()
-	results := githubClarketmP(ctx)
-	name := "githubClarketmP(ctx)"
-	if len(results) == 0 {
-		if *testRresults {
-			t.Errorf("%s didn't return results.", name)
-		}
-		return
-	}
-	if !re.MatchString(results[0].Proxy) {
-		t.Errorf("%s sample = %v; expected url pattern matching http://121.139.218.165:31409", name, results[0].Proxy)
-	} else {
-		t.Logf("%s sample = %v \t found = %v", name, results[0].Proxy, len(results))
-	}
-}
 func TestProxP(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
@@ -317,6 +302,41 @@ func TestProxylistMe(t *testing.T) {
 	defer cancel()
 	results := proxylistMeP(ctx)
 	name := "proxylistMeP(ctx)"
+	if len(results) == 0 {
+		if *testRresults {
+			t.Errorf("%s didn't return results.", name)
+		}
+		return
+	}
+	if !re.MatchString(results[0].Proxy) {
+		t.Errorf("%s sample = %v; expected url pattern matching http://121.139.218.165:31409", name, results[0].Proxy)
+	} else {
+		t.Logf("%s sample = %v \t found = %v", name, results[0].Proxy, len(results))
+	}
+}
+func TestKuaidailiP(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+	defer cancel()
+	results := kuaidailiP(ctx)
+	name := "kuaidailiP(ctx)"
+	if len(results) == 0 {
+		if *testRresults {
+			t.Errorf("%s didn't return results.", name)
+		}
+		return
+	}
+	if !re.MatchString(results[0].Proxy) {
+		t.Errorf("%s sample = %v; expected url pattern matching http://121.139.218.165:31409", name, results[0].Proxy)
+	} else {
+		t.Logf("%s sample = %v \t found = %v", name, results[0].Proxy, len(results))
+	}
+}
+
+func TestFeiyiproxyP(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+	defer cancel()
+	results := feiyiproxyP(ctx)
+	name := "feiyiproxyP(ctx)"
 	if len(results) == 0 {
 		if *testRresults {
 			t.Errorf("%s didn't return results.", name)

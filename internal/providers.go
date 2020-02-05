@@ -1115,3 +1115,91 @@ func githubClarketmP(ctx context.Context) Proxies {
 		}
 	}
 }
+
+func githubTheSpeedP(ctx context.Context) Proxies {
+	defer ctx.Done()
+	start := time.Now()
+	var (
+		foundProxies Proxies
+		mu           sync.Mutex
+		source       = "github.com/TheSpeed"
+		baseURL      = "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt"
+	)
+	done := make(chan bool)
+
+	go func() {
+		ipList, err := get(baseURL)
+		if err != nil {
+			return
+		}
+		for _, proxy := range findAllTemplate(reProxy, ipList, templateProxy) {
+			if proxy == "" {
+				continue
+			}
+			p := Proxy{Proxy: proxy, Source: source}
+			foundProxies = append(foundProxies, &p)
+		}
+		done <- true
+	}()
+	for {
+		select {
+		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
+			}
+			return foundP
+		case <-done:
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+			}
+			return foundProxies
+		}
+	}
+}
+
+func githubSunny9577(ctx context.Context) Proxies {
+	defer ctx.Done()
+	start := time.Now()
+	var (
+		foundProxies Proxies
+		mu           sync.Mutex
+		source       = "github.com/sunny9577"
+		baseURL      = "https://raw.githubusercontent.com/sunny9577/proxy-scraper/master/proxies.json"
+	)
+	done := make(chan bool)
+
+	go func() {
+		ipList, err := get(baseURL)
+		if err != nil {
+			return
+		}
+		for _, proxy := range findAllTemplate(reProxy, ipList, templateProxy) {
+			if proxy == "" {
+				continue
+			}
+			p := Proxy{Proxy: proxy, Source: source}
+			foundProxies = append(foundProxies, &p)
+		}
+		done <- true
+	}()
+	for {
+		select {
+		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
+			}
+			return foundP
+		case <-done:
+			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+			}
+			return foundProxies
+		}
+	}
+}

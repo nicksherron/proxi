@@ -147,7 +147,7 @@ func getKuaidaili(u string) (string, error) {
 // DownloadProxies downloads proxies from providers.
 func DownloadProxies() Proxies {
 	log.Println("Starting proxy downloads...")
-	wgD.Add(17)
+	wgD.Add(19)
 	var providerProxies Proxies
 
 	ctxTimeout := DownloadTimeout
@@ -307,7 +307,24 @@ func DownloadProxies() Proxies {
 		providerProxies = append(providerProxies, results...)
 		mutex.Unlock()
 	}()
-
+	go func() {
+		defer wgD.Done()
+		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
+		defer cancel()
+		results := githubTheSpeedP(ctx)
+		mutex.Lock()
+		providerProxies = append(providerProxies, results...)
+		mutex.Unlock()
+	}()
+	go func() {
+		defer wgD.Done()
+		ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
+		defer cancel()
+		results := githubSunny9577(ctx)
+		mutex.Lock()
+		providerProxies = append(providerProxies, results...)
+		mutex.Unlock()
+	}()
 	wgD.Wait()
 	return providerProxies
 
