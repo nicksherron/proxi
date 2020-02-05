@@ -61,7 +61,7 @@ var (
 	resolveCount int
 )
 
-func resolveJudges()  {
+func resolveJudges() {
 
 	suffix := "/get?show_env"
 	sites := []string{
@@ -84,7 +84,7 @@ func resolveJudges()  {
 
 	var limit int
 
-	if Workers <  100 {
+	if Workers < 100 {
 		limit = Workers
 	} else {
 		limit = 100

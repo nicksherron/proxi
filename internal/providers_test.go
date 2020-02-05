@@ -30,7 +30,6 @@ var (
 
 // TODO: Not sure if these are very idiomatic. Maybe use test table for providers instead of separate functions but still perform each test regardless of success.
 
-
 func TestUsProxyP(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
@@ -48,7 +47,6 @@ func TestUsProxyP(t *testing.T) {
 		t.Logf("%s sample = %v \t found = %v", name, results[0].Proxy, len(results))
 	}
 }
-
 
 func TestKuaidailiP(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
