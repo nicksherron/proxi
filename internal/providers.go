@@ -57,44 +57,51 @@ func freeproxylistsP(ctx context.Context) Proxies {
 
 	go func() {
 		for _, u := range fplUrls {
-			body, err := get(u)
-			if err != nil {
-				continue
-			}
-			template := "http://www.freeproxylists.com/load_${type}_${id}.html\n"
-			matches := findAllTemplate(fplReID, body, template)
-			for _, match := range matches {
-				w.Add(1)
-				ipList, err := get(match)
+			w.Add(1)
+			go func(endpoint string) {
+				defer w.Done()
+				body, err := get(endpoint)
 				if err != nil {
-					continue
+					return
 				}
-				go func(body string) {
-					defer w.Done()
-					matched := findAllTemplate(reProxy, body, templateProxy)
-					for _, proxy := range matched {
-						if proxy == "" {
-							continue
-						}
-						p := Proxy{Proxy: proxy, Source: source}
-						mu.Lock()
-						foundProxies = append(foundProxies, &p)
-						mu.Unlock()
+				template := "http://www.freeproxylists.com/load_${type}_${id}.html\n"
+				matches := findAllTemplate(fplReID, body, template)
+				for _, match := range matches {
+					w.Add(1)
+					ipList, err := get(match)
+					if err != nil {
+						continue
 					}
-				}(ipList)
-			}
-			w.Wait()
+					go func(body string) {
+						defer w.Done()
+						matched := findAllTemplate(reProxy, body, templateProxy)
+						for _, proxy := range matched {
+							if proxy == "" {
+								continue
+							}
+							p := Proxy{Proxy: proxy, Source: source}
+							mu.Lock()
+							foundProxies = append(foundProxies, &p)
+							mu.Unlock()
+						}
+					}(ipList)
+				}
+			}(u)
 		}
+		w.Wait()
 		done <- true
 	}()
 
 	for {
 		select {
 		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
-				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
 			}
-			return foundProxies
+			return foundP
 		case <-done:
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
@@ -151,10 +158,13 @@ func webanetlabsP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
-				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
 			}
-			return foundProxies
+			return foundP
 		case <-done:
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
@@ -218,10 +228,13 @@ func checkerproxyP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
-				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
 			}
-			return foundProxies
+			return foundP
 		case <-done:
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
@@ -274,10 +287,13 @@ func proxyListP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
-				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
 			}
-			return foundProxies
+			return foundP
 		case <-done:
 			return foundProxies
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
@@ -345,10 +361,13 @@ func aliveproxyP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
-				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
 			}
-			return foundProxies
+			return foundP
 		case <-done:
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
@@ -363,6 +382,7 @@ func feiyiproxyP(ctx context.Context) Proxies {
 	start := time.Now()
 	var (
 		foundProxies Proxies
+		mu           sync.Mutex
 		source       = "feiyiproxy.com"
 		baseURL      = "http://www.feiyiproxy.com/?page_id=1457"
 	)
@@ -384,10 +404,13 @@ func feiyiproxyP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
-				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
 			}
-			return foundProxies
+			return foundP
 		case <-done:
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
@@ -457,10 +480,13 @@ func yipP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
-				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
 			}
-			return foundProxies
+			return foundP
 		case <-done:
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
@@ -529,10 +555,13 @@ func ip3366P(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
-				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
 			}
-			return foundProxies
+			return foundP
 		case <-done:
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
@@ -607,10 +636,13 @@ func kuaidailiP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
-				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
 			}
-			return foundProxies
+			return foundP
 		case <-done:
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
@@ -635,12 +667,11 @@ func proxylistMeP(ctx context.Context) Proxies {
 		url          = "https://proxylist.me/"
 	)
 	done := make(chan bool)
-
-	go func() {
-		body, err := get(url)
-		if err != nil {
-			return
-		}
+	b, err := get(url)
+	if err != nil {
+		return Proxies{}
+	}
+	go func(body string) {
 		for _, href := range findSubmatchRange(reHref, body) {
 			i, err := strconv.Atoi(href)
 			if err != nil {
@@ -685,15 +716,18 @@ func proxylistMeP(ctx context.Context) Proxies {
 		}
 		w.Wait()
 		done <- true
-	}()
+	}(b)
 
 	for {
 		select {
 		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
-				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
 			}
-			return foundProxies
+			return foundP
 		case <-done:
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
@@ -733,16 +767,19 @@ func proxylistDownloadP(ctx context.Context) Proxies {
 				foundProxies = append(foundProxies, &p)
 				mu.Unlock()
 			}
-			done <- true
 		}
+		done <- true
 	}()
 	for {
 		select {
 		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
-				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
 			}
-			return foundProxies
+			return foundP
 		case <-done:
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
@@ -757,31 +794,35 @@ func usProxyP(ctx context.Context) Proxies {
 	start := time.Now()
 	var (
 		foundProxies Proxies
+		mu           sync.Mutex
 		source       = "us-proxy.org"
 	)
 
 	done := make(chan bool)
 	go func() {
-			body, err := get("https://us-proxy.org/")
-			if err != nil {
-				return
+		body, err := get("https://us-proxy.org/")
+		if err != nil {
+			return
+		}
+		for _, proxy := range findAllTemplate(reProxy, body, templateProxy) {
+			if proxy == "" {
+				continue
 			}
-			for _, proxy := range findAllTemplate(reProxy, body, templateProxy) {
-				if proxy == "" {
-					continue
-				}
-				p := Proxy{Proxy: proxy, Source: source}
-				foundProxies = append(foundProxies, &p)
-			}
-			done <- true
+			p := Proxy{Proxy: proxy, Source: source}
+			foundProxies = append(foundProxies, &p)
+		}
+		done <- true
 	}()
 	for {
 		select {
 		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
-				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
 			}
-			return foundProxies
+			return foundP
 		case <-done:
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
@@ -810,15 +851,14 @@ func blogspotP(ctx context.Context) Proxies {
 
 	done := make(chan bool)
 	go func() {
-
 		for _, domain := range domains {
 			w.Add(1)
 			go func(endpoint string) {
 				u := fmt.Sprintf("http://%v/", endpoint)
 				defer w.Done()
-				mutex.Lock()
+				mu.Lock()
 				urlList, err := get(u)
-				mutex.Unlock()
+				mu.Unlock()
 				if err != nil {
 					return
 				}
@@ -850,10 +890,13 @@ func blogspotP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
-				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
 			}
-			return foundProxies
+			return foundP
 		case <-done:
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
@@ -908,10 +951,13 @@ func proxP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
-				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
 			}
-			return foundProxies
+			return foundP
 		case <-done:
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
@@ -965,10 +1011,13 @@ func myProxyP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
-				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
 			}
-			return foundProxies
+			return foundP
 		case <-done:
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
@@ -983,6 +1032,7 @@ func xseoP(ctx context.Context) Proxies {
 	start := time.Now()
 	var (
 		foundProxies Proxies
+		mu           sync.Mutex
 		source       = "xseo.in"
 		baseURL      = "http://xseo.in/freeproxy"
 		re           = regexp.MustCompile(`(?P<ip>(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])):(?P<port>[0-9]{2,5})`)
@@ -1006,10 +1056,13 @@ func xseoP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
-				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
 			}
-			return foundProxies
+			return foundP
 		case <-done:
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
@@ -1024,6 +1077,7 @@ func githubClarketmP(ctx context.Context) Proxies {
 	start := time.Now()
 	var (
 		foundProxies Proxies
+		mu           sync.Mutex
 		source       = "github.com/clarketm"
 		baseURL      = "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list-raw.txt"
 	)
@@ -1046,10 +1100,13 @@ func githubClarketmP(ctx context.Context) Proxies {
 	for {
 		select {
 		case <-ctx.Done():
+			mu.Lock()
+			foundP := foundProxies
+			mu.Unlock()
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
-				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
+				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundP))
 			}
-			return foundProxies
+			return foundP
 		case <-done:
 			if os.Getenv("PROXI_PROVIDER_DEBUG") == "1" {
 				fmt.Printf("\n%v\t%v\t%v\n", time.Since(start), source, len(foundProxies))
