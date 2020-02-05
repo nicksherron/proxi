@@ -729,7 +729,7 @@ func proxylistDownloadP(ctx context.Context) Proxies {
 					continue
 				}
 				p := Proxy{Proxy: proxy, Source: source}
-				mu.Unlock()
+				mu.Lock()
 				foundProxies = append(foundProxies, &p)
 				mu.Unlock()
 			}
