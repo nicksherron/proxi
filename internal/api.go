@@ -125,7 +125,7 @@ func API() {
 		if busy {
 			c.String(http.StatusConflict, "busy")
 		} else {
-			go DownloadProxies()
+			go DownloadInit()
 			c.String(http.StatusOK, "ok")
 		}
 	})

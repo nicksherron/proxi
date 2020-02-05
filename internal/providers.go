@@ -708,6 +708,7 @@ func proxylistDownloadP(ctx context.Context) Proxies {
 	start := time.Now()
 	var (
 		foundProxies Proxies
+		mu           sync.Mutex
 		source       = "proxy-list.download"
 		urls         = []string{
 			"https://www.proxy-list.download/api/v1/get?type=http",
@@ -728,7 +729,9 @@ func proxylistDownloadP(ctx context.Context) Proxies {
 					continue
 				}
 				p := Proxy{Proxy: proxy, Source: source}
+				mu.Unlock()
 				foundProxies = append(foundProxies, &p)
+				mu.Unlock()
 			}
 			done <- true
 		}

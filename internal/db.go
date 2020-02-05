@@ -158,23 +158,29 @@ func dbCacheStats() {
 //--------------------------------------------------------------------------------------
 
 func loadDb(proxy *Proxy) {
+	defer mutex.Unlock()
 	_, err := DB.Exec(`insert into proxies("created_at", "updated_at", "check_count", "country", "fail_count",
  							"last_status", "proxy", "timeout_count", "source", "success_count", "anonymous", "losing_streak")
  							VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
  							ON CONFLICT (proxy) DO UPDATE SET updated_at = EXCLUDED.updated_at
  							`, time.Now(), time.Now(), proxy.CheckCount, proxy.Country, proxy.FailCount,
 		proxy.LastStatus, proxy.Proxy, proxy.TimeoutCount, proxy.Source, proxy.SuccessCount, proxy.Anonymous, proxy.LosingStreak)
+	mutex.Lock()
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
 func dbInsert(proxy *Proxy) {
+	defer mutex.Unlock()
+
 	_, err := DB.Exec(`update proxies SET "updated_at" = $1, "check_count" = $2 ,"fail_count" = $3,
  							"last_status" = $4, "timeout_count" = $5, "success_count" = $6, "losing_streak" = $7,
  							 "deleted" = $8,  "anonymous" = $9 , "proxy" = $10, judge = $11, "resp_time" = $12 where id = $13`,
 		time.Now(), proxy.CheckCount, proxy.FailCount, proxy.LastStatus, proxy.TimeoutCount,
 		proxy.SuccessCount, proxy.LosingStreak, proxy.Deleted, proxy.Anonymous, proxy.Proxy, proxy.Judge, proxy.RespTime, proxy.ID)
+	mutex.Lock()
+
 	if err != nil {
 		log.Println(err)
 	}
