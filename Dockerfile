@@ -38,5 +38,4 @@ WORKDIR /data
 # Expose port for live server
 EXPOSE 4444
 
-ENTRYPOINT ["proxi"]
-CMD ["--help"]
+CMD ["/usr/bin/proxi", "server", "--init"]
